@@ -2,28 +2,23 @@ module.exports = {
   root: true,
   parser: 'babel-eslint',
   parserOptions: {
-    sourceType: 'module'
+    sourceType: 'module',
   },
   env: {
-    browser: true
+    browser: true,
   },
   // https://github.com/feross/standard/blob/master/RULES.md#javascript-standard-style
-  extends: [
-    'standard'
-  ],
+  extends: ['standard'],
   // required to lint *.vue files
-  plugins: [
-    'html',
-    'import'
-  ],
+  plugins: ['html', 'import'],
   globals: {
-    'cordova': true,
-    'DEV': true,
-    'PROD': true,
-    '__THEME': true
+    cordova: true,
+    DEV: true,
+    PROD: true,
+    __THEME: true,
   },
   // add your custom rules here
-  'rules': {
+  rules: {
     // allow paren-less arrow functions
     'arrow-parens': 0,
     'one-var': 0,
@@ -34,6 +29,18 @@ module.exports = {
     'import/export': 2,
     // allow debugger during development
     'no-debugger': process.env.NODE_ENV === 'production' ? 2 : 0,
-    'brace-style': [2, 'stroustrup', { 'allowSingleLine': true }]
-  }
+    //custom
+    'space-before-function-paren': ['error', 'never'],
+    indent: ['error', 2],
+    quotes: ['error', 'single'],
+    'eol-last': ['error', 'always'],
+    'brace-style': [
+      2,
+      '1tbs',
+      {
+        allowSingleLine: true,
+      },
+    ],
+    'comma-dangle': ['error', 'always-multiline'],
+  },
 }
