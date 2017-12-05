@@ -1,5 +1,5 @@
 <template>
-  <q-layout ref="layout" view="lhh Lpp lpp">
+  <q-layout ref="layout" view="hHh Lpr fFf">
     <q-toolbar slot="header" color="green" reveal="true">
       <q-btn flat @click="$refs.layout.toggleLeft()">
         <q-icon name="menu" />
