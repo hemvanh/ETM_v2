@@ -8,7 +8,7 @@
     </q-toolbar>
     <div slot="footer" class="etm-footer">
       <small>
-        <cite>© Copyright 2017 Elitech VN Co., Ltd. All rights reserved.</cite>
+        <cite>© Copyright 2017 Elitetech Vietnam Co., Ltd. All rights reserved.</cite>
       </small>
     </div>
     <div slot="left">
@@ -40,8 +40,6 @@
       </q-collapsible>
 
     </div>
-    <!-- <div slot="navigation" class="bg-primary">nav</div> -->
-    <!-- <div class="bg-deep-purple-3" style="height:200px">This is the content</div> -->
     <router-view />
   </q-layout>
 </template>
