@@ -6,66 +6,59 @@
       </q-btn>
       <q-search inverted v-model="search" color="none" />
     </q-toolbar>
-    <!-- <div slot="footer" class="bg-negative">
+    <div slot="footer" class="etm-footer">
       <small>
         <cite>© Copyright 2017 Elitech VN Co., Ltd. All rights reserved.</cite>
       </small>
-    </div> -->
+    </div>
     <div slot="left">
-      <q-list separator>
-        <!-- collapsible to hide sub-level menu entries -->
-        <q-collapsible icon="inbox" label="Inbox" >
-          <q-item link to="/">
-            <q-item-side icon="mail" />
-            <q-item-main label="Email 1" />
-          </q-item>
-          <q-item link to="/">
-            <q-item-side icon="mail" />
-            <q-item-main label="Email 2" />
-          </q-item>
-          <q-collapsible icon="favorite" label="Favorites">
-            <q-item link to="/">
-              <q-item-side icon="mail" />
-              <q-item-main label="Favorite 1" />
-            </q-item>
-            <q-item to="/">
-              <q-item-side icon="mail" />
-              <q-item-main label="Favorite 2" />
-            </q-item>
-          </q-collapsible>
-          <q-item to="/">
-            <q-item-side icon="mail" />
-            <q-item-main label="Email 3" />
-          </q-item>
-        </q-collapsible>
-        <!-- menu link -->
-        <q-item link to="/">
-          <q-item-side icon="schedule" />
-          <q-item-main>
-            <q-item-tile label>Snoozed</q-item-tile>
-          </q-item-main>
-        </q-item>
-        <!-- collapsible to hide sub-level menu entries -->
-        <q-collapsible icon="send" label="Sent">
-          <q-item to="/">
-            <q-item-side icon="mail" />
-            <q-item-main label="Email 1" />
-          </q-item>
-        </q-collapsible>
-        <!-- menu link -->
-        <q-item link to="/">
-          <q-item-side icon="delete" />
-          <q-item-main>
-            <q-item-tile label>Trash</q-item-tile>
-          </q-item-main>
-        </q-item>
-      </q-list>
+      <q-side-link item to="/client" exact>
+        <q-item-side icon="content_paste" />
+        <q-item-main label="Client" />
+      </q-side-link>
+      <q-side-link item to="/supplier">
+        <q-item-side icon="assignment" />
+        <q-item-main label="Supplier" />
+      </q-side-link>
+      <q-side-link item to="/product">
+        <q-item-side icon="assignment" />
+        <q-item-main label="Product" />
+      </q-side-link>
+      <!--
+      Notice "indent" Boolean property on QCollapsible
+      which will make the sub-menu be indented.
+      Also, notice the "label" property which defines the
+      name of the menu item which opens up the sub-menu.
+    -->
+      <q-collapsible indent icon="event" label="Event" opened>
+        <q-side-link item to="/app/event">
+          <q-item-main label="Competitions" />
+        </q-side-link>
+        <q-side-link item to="/app/other-info">
+          <q-item-main label="Other Information" />
+        </q-side-link>
+      </q-collapsible>
 
     </div>
     <!-- <div slot="navigation" class="bg-primary">nav</div> -->
-    <div class="bg-deep-purple-3" style="height:200px">This is the content</div>
+    <!-- <div class="bg-deep-purple-3" style="height:200px">This is the content</div> -->
+    <router-view />
   </q-layout>
 </template>
 <script>
-export default {}
+export default {
+  data() {
+    return {
+      search: '',
+    }
+  },
+}
 </script>
+<style scoped>
+.etm-footer {
+  background-color: #0089d2;
+  color: #fff;
+  font-size: 0.8rem;
+}
+</style>
+

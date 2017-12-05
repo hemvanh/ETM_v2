@@ -7,7 +7,7 @@ module.exports = {
     src: path.resolve(__dirname, '../src'),
     assets: path.resolve(__dirname, '../src/assets'),
     '@': path.resolve(__dirname, '../src/components'),
-    variables: path.resolve(__dirname, '../src/themes/quasar.variables.styl')
+    variables: path.resolve(__dirname, '../src/themes/quasar.variables.styl'),
   },
 
   // Progress Bar Webpack plugin format
@@ -19,12 +19,12 @@ module.exports = {
 
   build: {
     env: require('./prod.env'),
-    publicPath: '',
+    publicPath: '/',
     productionSourceMap: false,
 
     // Remove unused CSS
     // Disable it if it has side-effects for your specific app
-    purifyCSS: true
+    purifyCSS: true,
   },
   dev: {
     env: require('./dev.env'),
@@ -44,8 +44,8 @@ module.exports = {
     // Proxy your API if using any.
     // Also see /build/script.dev.js and search for "proxy api requests"
     // https://github.com/chimurai/http-proxy-middleware
-    proxyTable: {}
-  }
+    proxyTable: {},
+  },
 }
 
 /*
