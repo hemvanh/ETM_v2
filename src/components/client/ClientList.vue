@@ -39,7 +39,7 @@ export default {
         // [REQUIRED] Set the row height
         rowHeight: '38px',
         // (optional) Title to display
-        title: 'Clients List',
+        title: '<span class="text-negative"><b>Clients List</b></span>',
         // (optional) No columns header
         noHeader: false,
         // (optional) Display refresh button
@@ -86,8 +86,8 @@ export default {
           allCols: 'All Fields',
           rows: 'Rows',
           selected: {
-            singular: 'item selected.',
-            plural: 'items selected.',
+            singular: 'Client selected.',
+            plural: 'Clients selected.',
           },
           clear: 'clear',
           search: 'Search',
