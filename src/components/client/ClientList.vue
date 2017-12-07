@@ -1,5 +1,5 @@
 <template>
-  <q-data-table :data="table" :config="config" :columns="columns" @refresh="refresh">
+  <q-data-table class="full-height" :data="table" :config="config" :columns="columns" @refresh="refresh">
     <!-- Custom renderer for "message" column -->
     <span class="light-paragraph" slot="col-client_name" slot-scope="cell">{{cell.data}}</span>
     <!-- Custom renderer for "source" column -->
@@ -56,7 +56,7 @@ export default {
         // Styling the body of the data table;
         // "minHeight", "maxHeight" or "height" are important
         bodyStyle: {
-          height: 'auto',
+          height: 'calc(100vh - 272px)',
         },
         // (optional) By default, Data Table is responsive,
         // but you can disable this by setting the property to "false"
