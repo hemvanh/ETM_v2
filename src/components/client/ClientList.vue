@@ -1,22 +1,30 @@
 <template>
-  <q-data-table class="full-height" :data="data" :config="config" :columns="columns" @refresh="refresh">
-    <!-- Custom renderer when user selected one or more rows -->
-    <span slot="selection" slot-scope="selection">
-      <q-btn color="primary" @click="changeMessage(selection)">
-        <i>edit</i>
-      </q-btn>
-      <q-btn color="negative" @click="deleteRow(selection)">
-        <i>delete</i>
-      </q-btn>
-    </span>
-  </q-data-table>
+  <div>
+    <q-data-table class="full-height" :data="data" :config="config" :columns="columns" @refresh="refresh">
+      <!-- Custom renderer when user selected one or more rows -->
+      <span slot="selection" slot-scope="selection">
+        <q-btn color="primary" @click="editClient(selection)">
+          <i>edit</i>
+        </q-btn>
+        <q-btn color="negative" @click="deleteClient(selection)">
+          <i>delete</i>
+        </q-btn>
+      </span>
+    </q-data-table>
+    <client-detail :open="isDetailOpen" @onClose="isDetailOpen=false"></client-detail>
+  </div>
 </template>
 <script>
 import mxGrid from '../_mixins/Grid'
+import clientDetail from './ClientDetail.vue'
 export default {
+  components: {
+    clientDetail,
+  },
   mixins: [mxGrid],
   data() {
     return {
+      isDetailOpen: false,
       config: {
         title: '<span class="text-negative"><b>Clients Information</b></span>',
       },
@@ -32,8 +40,10 @@ export default {
     }
   },
   methods: {
-    changeMessage() {},
-    deleteRow() {},
+    editClient() {
+      this.isDetailOpen = true
+    },
+    deleteClient() {},
     refresh(done) {
       this.$http
         .get('/api', {
