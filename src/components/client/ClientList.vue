@@ -11,7 +11,7 @@
         </q-btn>
       </span>
     </q-data-table>
-    <client-detail :open="isDetailOpen" @onClose="isDetailOpen=false"></client-detail>
+    <client-detail></client-detail>
   </div>
 </template>
 <script>
@@ -24,7 +24,6 @@ export default {
   mixins: [mxGrid],
   data() {
     return {
-      isDetailOpen: false,
       config: {
         title: '<span class="text-negative"><b>Clients Information</b></span>',
       },
@@ -41,7 +40,7 @@ export default {
   },
   methods: {
     editClient() {
-      this.isDetailOpen = true
+      this.$store.state.isDetailShown = true
     },
     deleteClient() {},
     refresh(done) {
