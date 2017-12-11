@@ -13,7 +13,18 @@ require(`quasar/dist/quasar.${__THEME}.css`)
 import Vue from 'vue'
 import Quasar, * as All from 'quasar'
 import router from './router'
+import axios from 'axios'
 
+let customAxios = axios.create({
+  timeout: 20000,
+
+  // remove the abundant "data" key from grahql response
+  transformResponse: axios.defaults.transformResponse.concat(data => {
+    return data.data
+  }),
+})
+
+Vue.prototype.$http = customAxios
 Vue.config.productionTip = false
 Vue.use(Quasar, {
   components: All,

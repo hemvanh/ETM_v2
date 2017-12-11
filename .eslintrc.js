@@ -30,9 +30,9 @@ module.exports = {
     // allow debugger during development
     'no-debugger': process.env.NODE_ENV === 'production' ? 2 : 0,
     //custom
-    'space-before-function-paren': ['error', 'never'],
     indent: ['error', 2],
     quotes: ['error', 'single'],
+    'space-before-function-paren': ['error', 'never'],
     'eol-last': ['error', 'always'],
     'brace-style': [
       2,

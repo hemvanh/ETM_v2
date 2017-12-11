@@ -1,6 +1,65 @@
 <template>
-  <div>This is the Client List</div>
+  <q-data-table class="full-height" :data="data" :config="config" :columns="columns" @refresh="refresh">
+    <!-- Custom renderer when user selected one or more rows -->
+    <span slot="selection" slot-scope="selection">
+      <q-btn color="primary" @click="changeMessage(selection)">
+        <i>edit</i>
+      </q-btn>
+      <q-btn color="negative" @click="deleteRow(selection)">
+        <i>delete</i>
+      </q-btn>
+    </span>
+  </q-data-table>
 </template>
 <script>
-export default {}
+import mxGrid from '../_mixins/Grid'
+export default {
+  mixins: [mxGrid],
+  data() {
+    return {
+      config: {
+        title: '<span class="text-negative"><b>Clients Information</b></span>',
+      },
+      columns: [
+        {label: 'Code', field: 'code', width: '75px', filter: true, sort: true, type: 'string'},
+        {label: 'Name', field: 'name', filter: true, sort: true, type: 'string'},
+        {label: 'Tax Code', field: 'tax_code', width: '100px', filter: true, sort: true, type: 'string'},
+        {label: 'Address', field: 'invoice_addr', filter: true, sort: true, type: 'string'},
+        {label: 'Delivery', field: 'delivery_addr', filter: true, sort: true, type: 'string'},
+        {label: 'Tel', field: 'tel', width: '120px', filter: true, sort: true, type: 'string'},
+        {label: 'Fax', field: 'fax', width: '120px', filter: true, sort: true, type: 'string'},
+      ],
+    }
+  },
+  methods: {
+    changeMessage() {},
+    deleteRow() {},
+    refresh(done) {
+      this.$http
+        .get('/api', {
+          params: {
+            query: `{
+            getAllClients {
+              code
+              name
+              tax_code
+              invoice_addr
+              delivery_addr
+              tel
+              fax
+            }
+          }`,
+          },
+        })
+        .then(({data}) => {
+          this.data = data.getAllClients
+          done()
+        })
+        .catch(err => {
+          alert(err)
+          done()
+        })
+    },
+  },
+}
 </script>
