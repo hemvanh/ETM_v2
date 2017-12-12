@@ -5,7 +5,7 @@
         <q-btn color="secondary" @click="$refs.popDetail.close()">
           <q-icon name="keyboard_arrow_left" />
         </q-btn>
-        <q-btn color="secondary">
+        <q-btn color="warning">
           <q-icon name="save" /> Save
         </q-btn>
         <q-toolbar-title>
