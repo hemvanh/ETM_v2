@@ -19,8 +19,8 @@ export default {
         },
         selection: 'multiple',
         messages: {
-          noData: '<i>warning</i> No data available to show.',
-          noDataAfterFiltering: 'No results. Please refine your search terms.',
+          noData: '<cite class="text-info">No data available to show.</cite>',
+          noDataAfterFiltering: '<cite class="text-info">No results. Please refine your search terms.</cite>',
         },
         labels: {
           columns: 'Columns',

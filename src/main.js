@@ -14,6 +14,7 @@ import Vue from 'vue'
 import Quasar, * as All from 'quasar'
 import router from './router'
 import axios from 'axios'
+import {store} from './store'
 
 let customAxios = axios.create({
   timeout: 20000,
@@ -44,6 +45,7 @@ Quasar.start(() => {
   new Vue({
     el: '#q-app',
     router,
+    store,
     render: h => h(require('./App').default),
   })
 })

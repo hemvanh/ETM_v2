@@ -52,11 +52,14 @@ export default {
   },
 }
 </script>
-<style scoped>
+<style>
 .etm-footer {
   background-color: #0089d2;
   color: #fff;
-  font-size: 0.8rem;
+  font-size: 0.8em;
+}
+.with-modal {
+  padding-right: 0px !important;
 }
 </style>
 
