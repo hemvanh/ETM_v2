@@ -52,6 +52,7 @@ export default {
           params: {
             query: `{
             getAllClients {
+              id
               code
               name
               tax_code

@@ -24,6 +24,10 @@ export const store = new Vuex.Store({
       _.extend(state.selectedClient, state.backupClient)
       state.isDetailShown = false
     },
+    applyClientChange: (state, payload) => {
+      _.extend(state.selectedClient, payload)
+      state.isDetailShown = false
+    },
     showDetail: (state, payload) => {
       state.isDetailShown = payload
     },

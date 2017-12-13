@@ -47,9 +47,30 @@ export default {
     ...mapGetters(['getSelectedClient']),
   },
   methods: {
-    ...mapMutations(['discardClientChange']),
+    ...mapMutations(['discardClientChange', 'applyClientChange']),
     updateSelectedClient() {
-      console.log(this.getSelectedClient)
+      // console.log(this.getSelectedClient)
+      let query = `
+        mutation ($input: ClientInput) {
+          saveClient(input: $input) {
+            code
+            name
+            tax_code
+            invoice_addr
+            delivery_addr
+            tel
+            fax
+          }
+        }`
+      let variables = {input: this.getSelectedClient}
+      this.$http({
+        method: 'post',
+        url: '/api',
+        headers: {'Content-Type': 'application/json'},
+        data: JSON.stringify({query, variables}),
+      }).then(({data}) => {
+        this.applyClientChange(data.saveClient)
+      })
     },
   },
 }
