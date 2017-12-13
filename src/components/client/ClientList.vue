@@ -17,6 +17,7 @@
 <script>
 import mxGrid from '../_mixins/Grid'
 import clientDetail from './ClientDetail.vue'
+import {mapMutations} from 'vuex'
 export default {
   components: {
     clientDetail,
@@ -39,8 +40,10 @@ export default {
     }
   },
   methods: {
-    editClient() {
-      this.$store.state.isDetailShown = true
+    ...mapMutations(['setSelectedClient', 'showDetail']),
+    editClient(client) {
+      this.setSelectedClient(client)
+      this.showDetail(true)
     },
     deleteClient() {},
     refresh(done) {
