@@ -10,7 +10,7 @@ export default {
         columnPicker: true,
         // Height auto-resizing
         bodyStyle: {
-          height: 'calc(100vh - 272px)',
+          // height: 'calc(100vh - 235px)',
         },
         responsive: true,
         pagination: {

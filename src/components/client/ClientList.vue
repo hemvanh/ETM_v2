@@ -76,3 +76,25 @@ export default {
   },
 }
 </script>
+
+<style>
+/* fix Edit/Delete row button shrinking */
+@media (max-width: 767px) {
+  .q-data-table-toolbar .q-btn {
+    padding: 0 16px;
+  }
+}
+
+/* fix paging footer increase padding at @media(max-width: 767px) */
+.q-data-table-toolbar {
+  padding: 0.25rem 0.5rem !important;
+  font-weight: 300;
+}
+
+/* fix grid height at smallest screen-size */
+.q-data-table-body {
+  overflow: auto;
+  height: calc(100vh - 272px) !important;
+}
+</style>
+
