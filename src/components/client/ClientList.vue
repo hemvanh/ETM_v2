@@ -12,11 +12,16 @@
       </span>
     </q-data-table>
     <client-detail></client-detail>
+    <q-btn round color="positive" class="fixed btnAdd" @click="addClient">
+      <q-icon name="add" />
+    </q-btn>
   </div>
 </template>
 <script>
 import mxGrid from '../_mixins/Grid'
 import clientDetail from './ClientDetail.vue'
+import {mapMutations} from 'vuex'
+import {Toast} from 'quasar'
 export default {
   components: {
     clientDetail,
@@ -39,8 +44,16 @@ export default {
     }
   },
   methods: {
-    editClient() {
-      this.$store.state.isDetailShown = true
+    ...mapMutations(['setSelectedClient', 'showDetail', 'setIsAdd']),
+    editClient(client) {
+      this.setSelectedClient(client)
+      this.showDetail(true)
+      this.setIsAdd(false)
+    },
+    addClient() {
+      this.setSelectedClient()
+      this.showDetail(true)
+      this.setIsAdd(true)
     },
     deleteClient() {},
     refresh(done) {
@@ -49,6 +62,7 @@ export default {
           params: {
             query: `{
             getAllClients {
+              id
               code
               name
               tax_code
@@ -65,10 +79,46 @@ export default {
           done()
         })
         .catch(err => {
-          alert(err)
+          Toast.create.negative({
+            html: err.toString(),
+            timeout: 2000,
+          })
           done()
         })
     },
   },
 }
 </script>
+
+<style>
+/* fix Edit/Delete row button shrinking */
+@media (max-width: 767px) {
+  .q-data-table-toolbar .q-btn {
+    padding: 0 16px;
+  }
+}
+
+/* fix paging footer increase padding at @media(max-width: 767px) */
+.q-data-table-toolbar {
+  padding: 0.25rem 0.5rem !important;
+  font-weight: 300;
+}
+
+/* fix grid height at smallest screen-size */
+.q-data-table-body {
+  overflow: auto;
+  height: calc(100vh - 272px) !important;
+}
+
+/* @media (max-width: 600px) {
+  .btnAdd {
+    right: 20px !important;
+    bottom: 100px !important;
+  }
+} */
+.btnAdd {
+  right: 25px;
+  bottom: 92px;
+}
+</style>
+
