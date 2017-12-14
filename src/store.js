@@ -7,6 +7,7 @@ Vue.use(Vuex)
 export const store = new Vuex.Store({
   state: {
     isDetailShown: false,
+    isAdd: false,
     selectedClient: {},
     backupClient: {},
   },
@@ -14,9 +15,20 @@ export const store = new Vuex.Store({
     getSelectedClient: state => {
       return state.selectedClient
     },
+    getIsAdd: state => {
+      return state.isAdd
+    },
   },
   mutations: {
+    setIsAdd: (state, payload) => {
+      state.isAdd = payload
+    },
     setSelectedClient: (state, payload) => {
+      if (_.isEmpty(payload)) {
+        // set the detail popup clean when Adding a new Client
+        state.selectedClient = {}
+        return
+      }
       state.selectedClient = payload.rows[0].data
       state.backupClient = _.clone(payload.rows[0].data)
     },

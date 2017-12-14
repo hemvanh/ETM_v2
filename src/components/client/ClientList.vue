@@ -12,7 +12,7 @@
       </span>
     </q-data-table>
     <client-detail></client-detail>
-    <q-btn round color="positive" class="fixed btnAdd">
+    <q-btn round color="positive" class="fixed btnAdd" @click="addClient">
       <q-icon name="add" />
     </q-btn>
   </div>
@@ -21,6 +21,7 @@
 import mxGrid from '../_mixins/Grid'
 import clientDetail from './ClientDetail.vue'
 import {mapMutations} from 'vuex'
+import {Toast} from 'quasar'
 export default {
   components: {
     clientDetail,
@@ -43,10 +44,16 @@ export default {
     }
   },
   methods: {
-    ...mapMutations(['setSelectedClient', 'showDetail']),
+    ...mapMutations(['setSelectedClient', 'showDetail', 'setIsAdd']),
     editClient(client) {
       this.setSelectedClient(client)
       this.showDetail(true)
+      this.setIsAdd(false)
+    },
+    addClient() {
+      this.setSelectedClient()
+      this.showDetail(true)
+      this.setIsAdd(true)
     },
     deleteClient() {},
     refresh(done) {
@@ -72,7 +79,10 @@ export default {
           done()
         })
         .catch(err => {
-          alert(err)
+          Toast.create.negative({
+            html: err.toString(),
+            timeout: 2000,
+          })
           done()
         })
     },

@@ -1,14 +1,14 @@
 <template>
-  <q-modal :no-backdrop-dismiss="isSaving" :no-esc-dismiss="isSaving" v-model="$store.state.isDetailShown" ref="popDetail" :content-css="{minWidth: '70vw', minHeight: '70vh'}">
+  <q-modal :no-backdrop-dismiss="isProcessing" :no-esc-dismiss="isProcessing" v-model="$store.state.isDetailShown" ref="popDetail" :content-css="{minWidth: '70vw', minHeight: '70vh'}">
     <q-modal-layout>
       <q-toolbar slot="header">
-        <q-btn color="warning" @click="discardClientChange" :disabled="isSaving">
+        <q-btn color="warning" @click="discardClientChange" :disabled="isProcessing">
           <q-icon name="block" /> Discard
         </q-btn>
         <q-btn color="positive" @click="updateSelectedClient">
-          <q-icon name="save" /> Save
+          <q-icon :name="getIsAdd?'add':'save'" /> {{getIsAdd?"Add":"Save"}}
           <span slot="loading">
-            <q-spinner-hourglass class="on-left" /> Saving...
+            <q-spinner-hourglass class="on-left" /> {{getIsAdd?"Adding...":" Saving..."}}
           </span>
         </q-btn>
         <q-toolbar-title>
@@ -44,20 +44,23 @@
 
 <script>
 import {mapGetters, mapMutations} from 'vuex'
+import {Toast} from 'quasar'
+
 export default {
   data: () => ({
-    isSaving: false,
+    isProcessing: false,
   }),
   computed: {
-    ...mapGetters(['getSelectedClient']),
+    ...mapGetters(['getSelectedClient', 'getIsAdd']),
   },
   methods: {
     ...mapMutations(['discardClientChange', 'applyClientChange']),
-    updateSelectedClient() {
-      this.isSaving = true
+    updateSelectedClient(e, done) {
+      this.isProcessing = true
       let query = `
         mutation ($input: ClientInput) {
           saveClient(input: $input) {
+            id
             code
             name
             tax_code
@@ -73,10 +76,19 @@ export default {
         url: '/api',
         headers: {'Content-Type': 'application/json'},
         data: JSON.stringify({query, variables}),
-      }).then(({data}) => {
-        this.isSaving = false
-        this.applyClientChange(data.saveClient)
       })
+        .then(({data}) => {
+          this.isProcessing = false
+          this.applyClientChange(data.saveClient)
+        })
+        .catch(err => {
+          this.isProcessing = false
+          Toast.create.negative({
+            html: err.toString(),
+            timeout: 2000,
+          })
+          done()
+        })
     },
   },
 }
