@@ -1,12 +1,15 @@
 <template>
-  <q-modal v-model="$store.state.isDetailShown" ref="popDetail" :content-css="{minWidth: '70vw', minHeight: '70vh'}">
+  <q-modal :no-backdrop-dismiss="isSaving" :no-esc-dismiss="isSaving" v-model="$store.state.isDetailShown" ref="popDetail" :content-css="{minWidth: '70vw', minHeight: '70vh'}">
     <q-modal-layout>
       <q-toolbar slot="header">
-        <q-btn color="warning" @click="discardClientChange">
+        <q-btn color="warning" @click="discardClientChange" :disabled="isSaving">
           <q-icon name="block" /> Discard
         </q-btn>
         <q-btn color="positive" @click="updateSelectedClient">
           <q-icon name="save" /> Save
+          <span slot="loading">
+            <q-spinner-hourglass class="on-left" /> Saving...
+          </span>
         </q-btn>
         <q-toolbar-title>
           Client Detail
@@ -42,13 +45,16 @@
 <script>
 import {mapGetters, mapMutations} from 'vuex'
 export default {
+  data: () => ({
+    isSaving: false,
+  }),
   computed: {
     ...mapGetters(['getSelectedClient']),
   },
   methods: {
     ...mapMutations(['discardClientChange', 'applyClientChange']),
     updateSelectedClient() {
-      // console.log(this.getSelectedClient)
+      this.isSaving = true
       let query = `
         mutation ($input: ClientInput) {
           saveClient(input: $input) {
@@ -68,6 +74,7 @@ export default {
         headers: {'Content-Type': 'application/json'},
         data: JSON.stringify({query, variables}),
       }).then(({data}) => {
+        this.isSaving = false
         this.applyClientChange(data.saveClient)
       })
     },
@@ -79,7 +86,5 @@ export default {
 .q-toolbar .q-btn{
   padding: 0 13px
 }
-
-
 </style>
 
