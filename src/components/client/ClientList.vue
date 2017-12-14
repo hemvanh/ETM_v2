@@ -12,6 +12,9 @@
       </span>
     </q-data-table>
     <client-detail></client-detail>
+    <q-btn round color="positive" class="fixed btnAdd">
+      <q-icon name="add" />
+    </q-btn>
   </div>
 </template>
 <script>
@@ -95,6 +98,17 @@ export default {
 .q-data-table-body {
   overflow: auto;
   height: calc(100vh - 272px) !important;
+}
+
+/* @media (max-width: 600px) {
+  .btnAdd {
+    right: 20px !important;
+    bottom: 100px !important;
+  }
+} */
+.btnAdd {
+  right: 25px;
+  bottom: 92px;
 }
 </style>
 
