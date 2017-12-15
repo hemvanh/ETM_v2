@@ -1,6 +1,6 @@
 <template>
   <div>
-    <q-data-table class="full-height" :data="tableData" :config="config" :columns="columns" @refresh="refresh">
+    <q-data-table class="full-height" :data="data" :config="config" :columns="columns" @refresh="refresh">
       <!-- Custom renderer when user selected one or more rows -->
       <span slot="selection" slot-scope="selection">
         <q-btn color="primary" @click="editClient(selection)">
@@ -28,11 +28,6 @@ export default {
     clientDetail,
   },
   mixins: [mxGrid],
-  computed: {
-    tableData() {
-      return this.data
-    },
-  },
   data() {
     return {
       isDeleting: false,
@@ -84,7 +79,9 @@ export default {
         _.remove(this.data, client => {
           return ids.includes(client.id)
         })
-        console.log(this.data)
+        // this is to reactivate the grid with new data
+        // this.data = Object.assign([], this.data) --> it is ok too
+        this.data = _.clone(this.data)
       })
     },
     refresh(done) {
