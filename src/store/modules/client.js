@@ -1,6 +1,15 @@
 import _ from 'lodash'
 
 const state = {
+  fields: [
+    {label: 'Code', field: 'code', width: '75px', filter: true, sort: true, type: 'string'},
+    {label: 'Name', field: 'name', filter: true, sort: true, type: 'string'},
+    {label: 'Tax Code', field: 'tax_code', width: '100px', filter: true, sort: true, type: 'string'},
+    {label: 'Address', field: 'invoice_addr', filter: true, sort: true, type: 'string'},
+    {label: 'Delivery', field: 'delivery_addr', filter: true, sort: true, type: 'string'},
+    {label: 'Tel', field: 'tel', width: '120px', filter: true, sort: true, type: 'string'},
+    {label: 'Fax', field: 'fax', width: '120px', filter: true, sort: true, type: 'string'},
+  ],
   isDetailShown: false,
   isAdd: false,
   selectedClient: {},
@@ -13,6 +22,9 @@ const getters = {
   },
   getIsAdd: state => {
     return state.isAdd
+  },
+  getFields: state => {
+    return state.fields
   },
 }
 
