@@ -1,41 +1,90 @@
 <template>
-  <q-data-table class="full-height" :data="table" :config="config" :columns="columns" @refresh="refresh">
-    <!-- Custom renderer for "message" column -->
-    <span class="light-paragraph" slot="col-client_name" slot-scope="cell">{{cell.data}}</span>
-    <!-- Custom renderer for "source" column -->
-    <span slot="col-source" slot-scope="cell">
-      <span v-if="cell.data === 'Audit'" class="label text-white bg-primary">
-        Audit
-        <q-tooltip>Some data</q-tooltip>
+  <div>
+    <q-data-table class="full-height" :data="data" :config="config" :columns="getFields" @refresh="refresh">
+      <!-- Custom renderer when user selected one or more rows -->
+      <span slot="selection" slot-scope="selection">
+        <q-btn color="primary" @click="editClient(selection)">
+          <i>edit</i>
+        </q-btn>
+        <q-btn color="negative" @click="deleteClient(selection)" :disabled="isDeleting">
+          <i>delete</i>
+        </q-btn>
       </span>
-      <span v-else class="label text-white bg-negative">{{cell.data}}</span>
-    </span>
-    <!-- Custom renderer for "action" column with button for custom action -->
-    <q-btn slot='col-action' slot-scope='cell' color="primary" @click='doSomethingMethod(cell.row.id)'>View</q-btn>
-    <!-- Custom renderer when user selected one or more rows -->
-    <span slot="selection" slot-scope="selection">
-      <q-btn color="primary" @click="changeMessage(selection)">
-        <i>edit</i>
-      </q-btn>
-      <q-btn color="negative" @click="deleteRow(selection)">
-        <i>delete</i>
-      </q-btn>
-    </span>
-  </q-data-table>
+    </q-data-table>
+    <client-detail></client-detail>
+    <q-btn round color="positive" class="fixed btnAdd" @click="addClient">
+      <q-icon name="add" />
+    </q-btn>
+  </div>
 </template>
 <script>
+import mxGrid from '../_mixins/Grid'
+import clientDetail from './ClientDetail.vue'
+import {mapMutations, mapGetters} from 'vuex'
+import {Toast} from 'quasar'
+import _ from 'lodash'
 export default {
+  components: {
+    clientDetail,
+  },
+  mixins: [mxGrid],
+  data() {
+    return {
+      isDeleting: false,
+      config: {
+        title: '<span class="text-negative"><b>Clients Information</b></span>',
+      },
+    }
+  },
+  computed: {
+    ...mapGetters(['getFields']),
+  },
   methods: {
-    doSomethingMethod() {},
-    changeMessage() {},
-    deleteRow() {},
-    refresh() {
-      // console.log('refresh')
+    ...mapMutations(['setSelectedClient', 'showDetail', 'setIsAdd']),
+    editClient(client) {
+      this.setSelectedClient(client)
+      this.showDetail(true)
+      this.setIsAdd(false)
+    },
+    addClient() {
+      this.setSelectedClient()
+      this.showDetail(true)
+      this.setIsAdd(true)
+    },
+    deleteClient(selection) {
+      this.isDeleting = true
+      let ids = Array.from(selection.rows, client => client.data.id)
+      let query = `
+        mutation ($ids: [Int]) {
+          deleteClient(ids: $ids)
+        }`
+      let variables = {ids}
+      this.$http({
+        method: 'post',
+        url: '/api',
+        headers: {'Content-Type': 'application/json'},
+        data: JSON.stringify({query, variables}),
+      }).then(({data}) => {
+        this.isDeleting = false
+        Toast.create.info({
+          html: data.deleteClient + ' client(s) deleted',
+          timeout: 2000,
+        })
+        _.remove(this.data, client => {
+          return ids.includes(client.id)
+        })
+        // this is to reactivate the grid with new data
+        // this.data = Object.assign([], this.data) --> it is ok too
+        this.data = _.clone(this.data)
+      })
+    },
+    refresh(done) {
       this.$http
-        .get('localhost:3000/graphql', {
+        .get('/api', {
           params: {
             query: `{
             getAllClients {
+              id
               code
               name
               tax_code
@@ -47,129 +96,51 @@ export default {
           }`,
           },
         })
-        .then(res => {
-          console.log(res)
+        .then(({data}) => {
+          this.data = data.getAllClients
+          done()
+        })
+        .catch(err => {
+          Toast.create.negative({
+            html: err.toString(),
+            timeout: 2000,
+          })
+          done()
         })
     },
   },
-  data() {
-    return {
-      config: {
-        // [REQUIRED] Set the row height
-        rowHeight: '38px',
-        // (optional) Title to display
-        title: '<span class="text-negative"><b>Clients List</b></span>',
-        // (optional) No columns header
-        noHeader: false,
-        // (optional) Display refresh button
-        refresh: true,
-        // (optional)
-        // User will be able to choose which columns
-        // should be displayed
-        columnPicker: true,
-        // (optional) How many columns from the left are sticky
-        // leftStickyColumns: 0,
-        // (optional) How many columns from the right are sticky
-        // rightStickyColumns: 2,
-        // (optional)
-        // Styling the body of the data table;
-        // "minHeight", "maxHeight" or "height" are important
-        bodyStyle: {
-          height: 'calc(100vh - 272px)',
-        },
-        // (optional) By default, Data Table is responsive,
-        // but you can disable this by setting the property to "false"
-        responsive: true,
-        // (optional) Use pagination. Set how many rows per page
-        // and also specify an additional optional parameter ("options")
-        // which forces user to make a selection of how many rows per
-        // page he wants from a specific list
-        pagination: {
-          rowsPerPage: 15,
-          options: [5, 10, 15, 30, 50, 500],
-        },
-        // (optional) Select one or more rows for an action
-        // "single" adds a column with radio buttons for single row selection
-        // "multiple" adds a column with checkboxes for multiple row selection
-        // omitting the property will result in no selection column at all
-        selection: 'multiple',
-        // (optional) Override default messages when no data is available
-        // or the user filtering returned no results.
-        messages: {
-          noData: '<i>warning</i> No data available to show.',
-          noDataAfterFiltering: 'No results. Please refine your search terms.',
-        },
-        // (optional) Override default labels. Useful for I18n.
-        labels: {
-          columns: 'Columns',
-          allCols: 'All Fields',
-          rows: 'Rows',
-          selected: {
-            singular: 'Client selected.',
-            plural: 'Clients selected.',
-          },
-          clear: 'clear',
-          search: 'Search',
-          all: 'All',
-        },
-      },
-      columns: [
-        {
-          label: 'Code',
-          field: 'client_code',
-          width: '75px',
-          filter: true,
-          sort: true,
-          type: 'string',
-        },
-        {
-          label: 'Name',
-          field: 'client_name',
-          filter: true,
-          sort: true,
-          type: 'string',
-        },
-        {
-          label: 'Tax Code',
-          field: 'client_tax_code',
-          width: '100px',
-          filter: true,
-          sort: true,
-          type: 'string',
-        },
-        {
-          label: 'Address',
-          field: 'client_invoice_addr',
-          filter: true,
-          sort: true,
-          type: 'string',
-        },
-        {
-          label: 'Delivery',
-          field: 'client_delivery_addr',
-          filter: true,
-          sort: true,
-          type: 'string',
-        },
-        {
-          label: 'Tel',
-          field: 'client_tel',
-          width: '120px',
-          filter: true,
-          sort: true,
-          type: 'string',
-        },
-        {
-          label: 'Fax',
-          field: 'client_fax',
-          width: '120px',
-          filter: true,
-          sort: true,
-          type: 'string',
-        },
-      ],
-      table: [],
-    }
-  },
 }
 </script>
+
+<style>
+/* fix Edit/Delete row button shrinking */
+@media (max-width: 767px) {
+  .q-data-table-toolbar .q-btn {
+    padding: 0 16px;
+  }
+}
+
+/* fix paging footer increase padding at @media(max-width: 767px) */
+.q-data-table-toolbar {
+  padding: 0.25rem 0.5rem !important;
+  font-weight: 300;
+}
+
+/* fix grid height at smallest screen-size */
+.q-data-table-body {
+  overflow: auto;
+  height: calc(100vh - 272px) !important;
+}
+
+/* @media (max-width: 600px) {
+  .btnAdd {
+    right: 20px !important;
+    bottom: 100px !important;
+  }
+} */
+.btnAdd {
+  right: 25px;
+  bottom: 92px;
+}
+</style>
+
