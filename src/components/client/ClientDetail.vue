@@ -1,5 +1,5 @@
 <template>
-  <q-modal content-classes="bg-grey-9" :no-backdrop-dismiss="isProcessing" :no-esc-dismiss="isProcessing" v-model="$store.state.isDetailShown" ref="popDetail" :content-css="{minWidth: '70vw', minHeight: '70vh'}">
+  <q-modal content-classes="bg-grey-9" :no-backdrop-dismiss="true" :no-esc-dismiss="true" v-model="$store.state.mClient.isDetailShown" ref="popDetail" :content-css="{minWidth: '70vw', minHeight: '70vh'}">
     <q-modal-layout>
       <q-toolbar slot="header">
         <q-btn color="warning" @click="discardClientChange" :disabled="isProcessing">
