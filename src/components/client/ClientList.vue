@@ -6,7 +6,7 @@
         <q-btn color="primary" @click="editClient(selection)">
           <i>edit</i>
         </q-btn>
-        <q-btn color="negative" @click="deleteClient(selection)">
+        <q-btn color="negative" @click="deleteClient(selection)" :disabled="isDeleting">
           <i>delete</i>
         </q-btn>
       </span>
@@ -22,6 +22,7 @@ import mxGrid from '../_mixins/Grid'
 import clientDetail from './ClientDetail.vue'
 import {mapMutations} from 'vuex'
 import {Toast} from 'quasar'
+import _ from 'lodash'
 export default {
   components: {
     clientDetail,
@@ -29,6 +30,7 @@ export default {
   mixins: [mxGrid],
   data() {
     return {
+      isDeleting: false,
       config: {
         title: '<span class="text-negative"><b>Clients Information</b></span>',
       },
@@ -55,7 +57,33 @@ export default {
       this.showDetail(true)
       this.setIsAdd(true)
     },
-    deleteClient() {},
+    deleteClient(selection) {
+      this.isDeleting = true
+      let ids = Array.from(selection.rows, client => client.data.id)
+      let query = `
+        mutation ($ids: [Int]) {
+          deleteClient(ids: $ids)
+        }`
+      let variables = {ids}
+      this.$http({
+        method: 'post',
+        url: '/api',
+        headers: {'Content-Type': 'application/json'},
+        data: JSON.stringify({query, variables}),
+      }).then(({data}) => {
+        this.isDeleting = false
+        Toast.create.info({
+          html: data.deleteClient + ' client(s) deleted',
+          timeout: 2000,
+        })
+        _.remove(this.data, client => {
+          return ids.includes(client.id)
+        })
+        // this is to reactivate the grid with new data
+        // this.data = Object.assign([], this.data) --> it is ok too
+        this.data = _.clone(this.data)
+      })
+    },
     refresh(done) {
       this.$http
         .get('/api', {
