@@ -1,6 +1,6 @@
 <template>
   <div>
-    <q-data-table class="full-height" :data="data" :config="config" :columns="columns" @refresh="refresh">
+    <q-data-table class="full-height" :data="data" :config="config" :columns="getFields" @refresh="refresh">
       <!-- Custom renderer when user selected one or more rows -->
       <span slot="selection" slot-scope="selection">
         <q-btn color="primary" @click="editClient(selection)">
@@ -20,7 +20,7 @@
 <script>
 import mxGrid from '../_mixins/Grid'
 import clientDetail from './ClientDetail.vue'
-import {mapMutations} from 'vuex'
+import {mapMutations, mapGetters} from 'vuex'
 import {Toast} from 'quasar'
 import _ from 'lodash'
 export default {
@@ -34,16 +34,10 @@ export default {
       config: {
         title: '<span class="text-negative"><b>Clients Information</b></span>',
       },
-      columns: [
-        {label: 'Code', field: 'code', width: '75px', filter: true, sort: true, type: 'string'},
-        {label: 'Name', field: 'name', filter: true, sort: true, type: 'string'},
-        {label: 'Tax Code', field: 'tax_code', width: '100px', filter: true, sort: true, type: 'string'},
-        {label: 'Address', field: 'invoice_addr', filter: true, sort: true, type: 'string'},
-        {label: 'Delivery', field: 'delivery_addr', filter: true, sort: true, type: 'string'},
-        {label: 'Tel', field: 'tel', width: '120px', filter: true, sort: true, type: 'string'},
-        {label: 'Fax', field: 'fax', width: '120px', filter: true, sort: true, type: 'string'},
-      ],
     }
+  },
+  computed: {
+    ...mapGetters(['getFields']),
   },
   methods: {
     ...mapMutations(['setSelectedClient', 'showDetail', 'setIsAdd']),

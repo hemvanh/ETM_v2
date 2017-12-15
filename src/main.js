@@ -14,7 +14,7 @@ import Vue from 'vue'
 import Quasar, * as All from 'quasar'
 import router from './router'
 import axios from 'axios'
-import {store} from './store'
+import {store} from './store/store'
 
 let customAxios = axios.create({
   timeout: 20000,
