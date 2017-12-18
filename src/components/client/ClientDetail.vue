@@ -16,7 +16,7 @@
         </q-toolbar-title>
       </q-toolbar>
       <div style="padding: 15px">
-        <q-field :key="field" v-for="field in getFields" :label-width="3" :icon="field.icon" :label="field.label" :count="255" :helper="field.desc" error-label="Some error">
+        <q-field :key="field.field" v-for="field in getFields" :label-width="3" :icon="field.icon" :label="field.label" :count="255" :helper="field.desc" error-label="Some error">
           <q-input v-model="getSelectedClient[field.field]" dark color="yellow" />
         </q-field>
       </div>
