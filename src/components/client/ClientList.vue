@@ -73,7 +73,7 @@ export default {
         _.remove(this.data, client => {
           return ids.includes(client.id)
         })
-        // this is to reactivate the grid with new data
+        // this is to re-activate the grid with new data
         // this.data = Object.assign([], this.data) --> it is ok too
         this.data = _.clone(this.data)
       })
