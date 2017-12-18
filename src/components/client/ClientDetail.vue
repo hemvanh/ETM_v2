@@ -15,11 +15,37 @@
           Client Detail
         </q-toolbar-title>
       </q-toolbar>
-      <div style="padding: 15px">
-        <q-field :key="field.field" v-for="field in getFields" :label-width="3" :icon="field.icon" :label="field.label" :count="255" :helper="field.desc" error-label="Some error">
-          <q-input v-model="getSelectedClient[field.field]" dark color="yellow" />
-        </q-field>
-      </div>
+      <q-tabs color="orange" inverted no-pane-border>
+        <!-- Tabs - notice slot="title" -->
+        <q-tab slot="title" name="client-info" icon="event_note" default/>
+        <q-tab slot="title" name="client-contact" icon="group" />
+        <!-- Targets -->
+        <q-tab-pane name="client-info">
+          <q-field :key="field.field" v-for="field in getFields" :label-width="3" :icon="field.icon" :label="field.label" :count="255" :helper="field.desc" error-label="Some error">
+            <q-input v-model="getSelectedClient[field.field]" dark color="yellow" />
+          </q-field>
+        </q-tab-pane>
+        <q-tab-pane name="client-contact">
+          <q-list link no-border>
+            <q-item class="col">
+              <q-item-main>
+                <q-item-tile color="yellow" label>Content filtering</q-item-tile>
+                <q-item-tile color="green" sublabel>012345433</q-item-tile>
+                <q-item-tile color="deep-purple-3" sublabel>asdads@fsdf.vn</q-item-tile>
+                <q-item-tile sublabel>fdsa fasdf asd</q-item-tile>
+              </q-item-main>
+            </q-item>
+            <q-item class="col">
+              <q-item-main>
+                <q-item-tile color="yellow" label>Content filtering</q-item-tile>
+                <q-item-tile color="green" sublabel>012345433</q-item-tile>
+                <q-item-tile color="deep-purple-3" sublabel>asdads@fsdf.vn</q-item-tile>
+                <q-item-tile sublabel>fdsa fasdf asd</q-item-tile>
+              </q-item-main>
+            </q-item>
+          </q-list>
+        </q-tab-pane>
+      </q-tabs>
     </q-modal-layout>
   </q-modal>
 </template>
