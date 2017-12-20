@@ -27,22 +27,22 @@
         </q-tab-pane>
         <q-tab-pane name="client-contact">
           <q-list link no-border>
-            <q-item class="col">
+            <q-item :key="contact.id" v-for="contact in getSelectedClient.contacts">
+              <q-item-main>
+                <q-item-tile color="yellow" label>{{contact.name}} ({{contact.position}})</q-item-tile>
+                <q-item-tile color="green" sublabel>{{contact.tel}}</q-item-tile>
+                <q-item-tile color="deep-purple-3" sublabel>{{contact.email}}</q-item-tile>
+                <q-item-tile sublabel>{{contact.note}}</q-item-tile>
+              </q-item-main>
+            </q-item>
+            <!-- <q-item>
               <q-item-main>
                 <q-item-tile color="yellow" label>Content filtering</q-item-tile>
                 <q-item-tile color="green" sublabel>012345433</q-item-tile>
                 <q-item-tile color="deep-purple-3" sublabel>asdads@fsdf.vn</q-item-tile>
                 <q-item-tile sublabel>fdsa fasdf asd</q-item-tile>
               </q-item-main>
-            </q-item>
-            <q-item class="col">
-              <q-item-main>
-                <q-item-tile color="yellow" label>Content filtering</q-item-tile>
-                <q-item-tile color="green" sublabel>012345433</q-item-tile>
-                <q-item-tile color="deep-purple-3" sublabel>asdads@fsdf.vn</q-item-tile>
-                <q-item-tile sublabel>fdsa fasdf asd</q-item-tile>
-              </q-item-main>
-            </q-item>
+            </q-item> -->
           </q-list>
         </q-tab-pane>
       </q-tabs>

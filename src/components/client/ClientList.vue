@@ -92,6 +92,14 @@ export default {
               delivery_addr
               tel
               fax
+              contacts {
+                id
+                name
+                tel
+                email
+                position
+                note
+              }
             }
           }`,
           },
