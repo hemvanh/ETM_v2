@@ -1,4 +1,4 @@
-// import _ from 'lodash'
+import _ from 'lodash'
 
 const state = {
   fields: [
@@ -44,7 +44,7 @@ const state = {
 }
 
 const getters = {
-  getSelectedContact: state => {
+  getSelectedRec: state => {
     return state.selectedRec
   },
   getIsAdd: state => {
@@ -55,35 +55,35 @@ const getters = {
   },
 }
 
-// const mutations = {
-//   setIsAdd: (state, payload) => {
-//     state.isAdd = payload
-//   },
-//   setSelectedRec: (state, payload) => {
-//     if (_.isEmpty(payload)) {
-//       // set the detail popup clean when Adding a new Rec
-//       state.selectedRec = {}
-//       return
-//     }
-//     state.selectedRec = payload.rows[0].data
-//     state.backupRec = _.clone(payload.rows[0].data)
-//   },
-//   discardChange: state => {
-//     _.extend(state.selectedRec, state.backupRec)
-//     state.isDetailShown = false
-//   },
-//   applyChange: (state, payload) => {
-//     _.extend(state.selectedRec, payload)
-//     state.isDetailShown = false
-//   },
-//   showDetail: (state, payload) => {
-//     state.isDetailShown = payload
-//   },
-// }
+const mutations = {
+  setIsAdd: (state, payload) => {
+    state.isAdd = payload
+  },
+  setSelectedRec: (state, payload) => {
+    if (_.isEmpty(payload)) {
+      // set the detail popup clean when Adding a new Rec
+      state.selectedRec = {}
+      return
+    }
+    state.selectedRec = payload.rows[0].data
+    state.backupRec = _.clone(payload.rows[0].data)
+  },
+  discardChange: state => {
+    _.extend(state.selectedRec, state.backupRec)
+    state.isDetailShown = false
+  },
+  applyChange: (state, payload) => {
+    _.extend(state.selectedRec, payload)
+    state.isDetailShown = false
+  },
+  showDetail: (state, payload) => {
+    state.isDetailShown = payload
+  },
+}
 
 export default {
   namespaced: true,
   state,
   getters,
-  // mutations,
+  mutations,
 }
