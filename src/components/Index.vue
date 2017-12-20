@@ -16,6 +16,10 @@
         <q-item-side icon="content_paste" />
         <q-item-main label="Client" />
       </q-side-link>
+      <q-side-link item to="/contact" exact>
+        <q-item-side icon="content_paste" />
+        <q-item-main label="Contact" />
+      </q-side-link>
       <q-side-link item to="/supplier">
         <q-item-side icon="assignment" />
         <q-item-main label="Supplier" />

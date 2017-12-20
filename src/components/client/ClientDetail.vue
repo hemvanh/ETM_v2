@@ -2,7 +2,7 @@
   <q-modal content-classes="bg-grey-9" :no-backdrop-dismiss="true" :no-esc-dismiss="true" v-model="$store.state.mClient.isDetailShown" ref="popDetail" :content-css="{minWidth: '70vw', minHeight: '70vh'}">
     <q-modal-layout>
       <q-toolbar slot="header">
-        <q-btn color="warning" @click="discardClientChange" :disabled="isProcessing">
+        <q-btn color="warning" @click="discardChange" :disabled="isProcessing">
           <q-icon name="block" /> Discard
         </q-btn>
         <q-btn color="positive" @click="updateSelectedClient">
@@ -22,12 +22,12 @@
         <!-- Targets -->
         <q-tab-pane name="client-info">
           <q-field :key="field.field" v-for="field in getFields" :label-width="3" :icon="field.icon" :label="field.label" :count="255" :helper="field.desc" error-label="Some error">
-            <q-input v-model="getSelectedClient[field.field]" dark color="yellow" />
+            <q-input v-model="getSelectedRec[field.field]" dark color="yellow" />
           </q-field>
         </q-tab-pane>
         <q-tab-pane name="client-contact">
           <q-list link no-border>
-            <q-item :key="contact.id" v-for="contact in getSelectedClient.contacts">
+            <q-item :key="contact.id" v-for="contact in getSelectedRec.contacts">
               <q-item-main>
                 <q-item-tile color="yellow" label>{{contact.name}} ({{contact.position}})</q-item-tile>
                 <q-item-tile color="green" sublabel>{{contact.tel}}</q-item-tile>
@@ -59,10 +59,10 @@ export default {
     isProcessing: false,
   }),
   computed: {
-    ...mapGetters(['getSelectedClient', 'getIsAdd', 'getFields']),
+    ...mapGetters('mClient', ['getSelectedRec', 'getIsAdd', 'getFields']),
   },
   methods: {
-    ...mapMutations(['discardClientChange', 'applyClientChange']),
+    ...mapMutations('mClient', ['discardChange', 'applyChange']),
     updateSelectedClient(e, done) {
       this.isProcessing = true
       let query = `
@@ -78,7 +78,7 @@ export default {
             fax
           }
         }`
-      let variables = {input: this.getSelectedClient}
+      let variables = {input: this.getSelectedRec}
       this.$http({
         method: 'post',
         url: '/api',
@@ -87,7 +87,7 @@ export default {
       })
         .then(({data}) => {
           this.isProcessing = false
-          this.applyClientChange(data.saveClient)
+          this.applyChange(data.saveClient)
         })
         .catch(err => {
           this.isProcessing = false

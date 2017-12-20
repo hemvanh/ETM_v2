@@ -37,17 +37,17 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['getFields']),
+    ...mapGetters('mClient', ['getFields']),
   },
   methods: {
-    ...mapMutations(['setSelectedClient', 'showDetail', 'setIsAdd']),
+    ...mapMutations('mClient', ['setSelectedRec', 'showDetail', 'setIsAdd']),
     editClient(client) {
-      this.setSelectedClient(client)
+      this.setSelectedRec(client)
       this.showDetail(true)
       this.setIsAdd(false)
     },
     addClient() {
-      this.setSelectedClient()
+      this.setSelectedRec()
       this.showDetail(true)
       this.setIsAdd(true)
     },
