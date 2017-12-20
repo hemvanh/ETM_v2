@@ -35,14 +35,6 @@
                 <q-item-tile sublabel>{{contact.note}}</q-item-tile>
               </q-item-main>
             </q-item>
-            <!-- <q-item>
-              <q-item-main>
-                <q-item-tile color="yellow" label>Content filtering</q-item-tile>
-                <q-item-tile color="green" sublabel>012345433</q-item-tile>
-                <q-item-tile color="deep-purple-3" sublabel>asdads@fsdf.vn</q-item-tile>
-                <q-item-tile sublabel>fdsa fasdf asd</q-item-tile>
-              </q-item-main>
-            </q-item> -->
           </q-list>
         </q-tab-pane>
       </q-tabs>
