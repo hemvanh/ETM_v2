@@ -11,7 +11,7 @@
         </q-btn>
       </span>
     </q-data-table>
-    <client-detail></client-detail>
+    <pop-detail></pop-detail>
     <q-btn round color="positive" class="fixed btnAdd" @click="addClient">
       <q-icon name="add" />
     </q-btn>
@@ -19,13 +19,13 @@
 </template>
 <script>
 import mxGrid from '../_mixins/Grid'
-import clientDetail from './ClientDetail.vue'
+import popDetail from './Detail.vue'
 import {mapMutations, mapGetters} from 'vuex'
 import {Toast} from 'quasar'
 import _ from 'lodash'
 export default {
   components: {
-    clientDetail,
+    popDetail,
   },
   mixins: [mxGrid],
   data() {
