@@ -1,6 +1,6 @@
 <template>
   <div>
-    <q-data-table class="full-height" :data="data" :config="config" :columns="getFields" @refresh="refresh">
+    <q-data-table class="full-height" :data="getRecs" :config="config" :columns="getFields" @refresh="fetchRecs">
       <!-- Custom renderer when user selected one or more rows -->
       <span slot="selection" slot-scope="selection">
         <q-btn color="primary" @click="editRec(selection)">
@@ -22,7 +22,7 @@
 import mxGrid from '../_mixins/Grid'
 import popDetail from './Detail.vue'
 import {mapGetters, mapMutations} from 'vuex'
-import {Toast} from 'quasar'
+// import {Toast} from 'quasar'
 
 export default {
   components: {popDetail},
@@ -34,38 +34,10 @@ export default {
     },
   }),
   computed: {
-    ...mapGetters('mContact', ['getFields']),
+    ...mapGetters('mContact', ['getFields', 'getRecs']),
   },
   methods: {
-    ...mapMutations('mContact', ['setSelectedRec', 'showDetail', 'setIsAdd']),
-    refresh(done) {
-      this.$http
-        .get('/api', {
-          params: {
-            query: `{
-            getAllContacts {
-              id
-              name
-              tel
-              email
-              position
-              note
-            }
-          }`,
-          },
-        })
-        .then(({data}) => {
-          this.data = data.getAllContacts
-          done()
-        })
-        .catch(err => {
-          Toast.create.negative({
-            html: err.toString(),
-            timeout: 2000,
-          })
-          done()
-        })
-    },
+    ...mapMutations('mContact', ['setSelectedRec', 'showDetail', 'setIsAdd', 'fetchRecs']),
     addRec() {
       this.setSelectedRec()
       this.showDetail(true)

@@ -16,7 +16,11 @@
         </q-toolbar-title>
       </q-toolbar>
       <div style="padding: 0 15px">
-        <q-field :key="field.field" v-for="field in getFields" :label-width="3" :icon="field.icon" :label="field.label" :count="255" :helper="field.desc" error-label="Some error">
+        <q-field icon="face" :label-width="3" label="Client">
+          <q-select filter v-model="getSelectedRec.clientId" float-label="Tìm thông tin Khách Hàng ..." radio :options="clientList" dark color="red" />
+        </q-field>
+        <!-- <q-field :key="field.field" v-for="field in getFields" label-width="3" :icon="field.icon" :label="field.label" :helper="field.desc" error-label="Some error"> -->
+        <q-field :key="field.field" v-for="field in getFields" :label-width="3" :icon="field.icon" :label="field.label">
           <q-input v-model="getSelectedRec[field.field]" dark color="yellow" />
         </q-field>
       </div>
@@ -31,6 +35,26 @@ import {Toast} from 'quasar'
 export default {
   data: () => ({
     isProcessing: false,
+    clientList: [
+      {
+        value: 1, // The value given, when selected
+        label: 'Romania', // The value displayed as main label for this suggested selection
+        sublabel: 'Continent: Europe', // optional
+        stamp: '18 mil', // optional
+      },
+      {
+        value: 2, // The value given, when selected
+        label: 'Lollipop', // The value displayed as main label for this suggested selection
+        sublabel: 'Continent: Europe', // optional
+        stamp: '18 mil', // optional
+      },
+      {
+        value: 3, // The value given, when selected
+        label: 'Morning', // The value displayed as main label for this suggested selection
+        sublabel: 'Continent: Europe', // optional
+        stamp: '18 mil', // optional
+      },
+    ],
   }),
   computed: {
     ...mapGetters('mContact', ['getSelectedRec', 'getIsAdd', 'getFields']),

@@ -1,4 +1,5 @@
 import _ from 'lodash'
+import {_ax, _alert} from '../../libs/util'
 
 const state = {
   fields: [
@@ -18,14 +19,14 @@ const state = {
       width: '100px',
       filter: true,
       type: 'string',
-      icon: 'receipt',
+      icon: 'email',
     },
     {
       label: 'Position',
       field: 'position',
       filter: true,
       type: 'string',
-      icon: 'motorcycle',
+      icon: 'work',
       desc: 'Chức vụ',
     },
     {
@@ -33,7 +34,7 @@ const state = {
       field: 'note',
       filter: true,
       type: 'string',
-      icon: 'motorcycle',
+      icon: 'note',
       desc: 'Ghi chú thêm',
     },
   ],
@@ -41,6 +42,7 @@ const state = {
   isAdd: false,
   selectedRec: {},
   backupRec: {},
+  recs: [],
 }
 
 const getters = {
@@ -52,6 +54,9 @@ const getters = {
   },
   getFields: state => {
     return state.fields
+  },
+  getRecs: state => {
+    return state.recs
   },
 }
 
@@ -78,6 +83,33 @@ const mutations = {
   },
   showDetail: (state, payload) => {
     state.isDetailShown = payload
+  },
+  fetchRecs: (state, done) => {
+    // done is passed from @refresh="fetchRecs" of Contact q-data-table
+    _ax
+      .get('/api', {
+        params: {
+          query: `{
+          getAllContacts {
+            id
+            name
+            tel
+            email
+            position
+            note
+            clientId
+          }
+        }`,
+        },
+      })
+      .then(({data}) => {
+        state.recs = data.getAllContacts
+        done()
+      })
+      .catch(err => {
+        _alert(err, 'negative')
+        done()
+      })
   },
 }
 
