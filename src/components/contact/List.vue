@@ -21,7 +21,7 @@
 <script>
 import mxGrid from '../_mixins/Grid'
 import popDetail from './Detail.vue'
-import {mapGetters, mapMutations} from 'vuex'
+import {mapGetters, mapMutations, mapActions} from 'vuex'
 // import {Toast} from 'quasar'
 
 export default {
@@ -37,7 +37,8 @@ export default {
     ...mapGetters('mContact', ['getFields', 'getRecs']),
   },
   methods: {
-    ...mapMutations('mContact', ['setSelectedRec', 'showDetail', 'setIsAdd', 'fetchRecs']),
+    ...mapMutations('mContact', ['setSelectedRec', 'showDetail', 'setIsAdd']),
+    ...mapActions('mContact', ['fetchRecs']),
     addRec() {
       this.setSelectedRec()
       this.showDetail(true)

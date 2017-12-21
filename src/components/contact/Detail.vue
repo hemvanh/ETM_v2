@@ -2,10 +2,10 @@
   <q-modal content-classes="bg-grey-9" :no-backdrop-dismiss="true" :no-esc-dismiss="true" v-model="$store.state.mContact.isDetailShown" :content-css="{minWidth: '70vw', minHeight: '70vh'}">
     <q-modal-layout>
       <q-toolbar slot="header">
-        <q-btn color="warning" @click="discardChange" :disabled="isProcessing">
+        <q-btn color="warning" @click="discardChange" :disabled="getIsProcessing">
           <q-icon name="block" /> Discard
         </q-btn>
-        <q-btn color="positive" @click="updateSelectedRec">
+        <q-btn color="positive" @click="save">
           <q-icon :name="getIsAdd?'add':'save'" /> {{getIsAdd?"Add":"Save"}}
           <span slot="loading">
             <q-spinner-hourglass class="on-left" /> {{getIsAdd?"Adding...":" Saving..."}}
@@ -29,12 +29,10 @@
 </template>
 
 <script>
-import {mapGetters, mapMutations} from 'vuex'
-import {Toast} from 'quasar'
+import {mapGetters, mapMutations, mapActions} from 'vuex'
 
 export default {
   data: () => ({
-    isProcessing: false,
     clientList: [
       {
         value: 1, // The value given, when selected
@@ -57,44 +55,14 @@ export default {
     ],
   }),
   computed: {
-    ...mapGetters('mContact', ['getSelectedRec', 'getIsAdd', 'getFields']),
+    ...mapGetters('mContact', ['getSelectedRec', 'getIsAdd', 'getFields', 'getIsProcessing']),
   },
   methods: {
     ...mapMutations('mContact', ['discardChange', 'applyChange']),
-    updateSelectedRec(e, done) {
-      this.isProcessing = true
-      let query = `
-        mutation ($input: ClientInput) {
-          saveClient(input: $input) {
-            id
-            code
-            name
-            tax_code
-            invoice_addr
-            delivery_addr
-            tel
-            fax
-          }
-        }`
-      let variables = {input: this.getSelectedRec}
-      this.$http({
-        method: 'post',
-        url: '/api',
-        headers: {'Content-Type': 'application/json'},
-        data: JSON.stringify({query, variables}),
-      })
-        .then(({data}) => {
-          this.isProcessing = false
-          this.applyChange(data.saveClient)
-        })
-        .catch(err => {
-          this.isProcessing = false
-          Toast.create.negative({
-            html: err.toString(),
-            timeout: 2000,
-          })
-          done()
-        })
+    ...mapActions('mContact', ['updateSelectedRec']),
+    save(_, done) {
+      // Actions only allow a single payload (_, done) is passed by Quasar
+      this.updateSelectedRec(done)
     },
   },
 }

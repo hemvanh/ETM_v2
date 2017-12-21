@@ -43,6 +43,7 @@ const state = {
   selectedRec: {},
   backupRec: {},
   recs: [],
+  isProcessing: false,
 }
 
 const getters = {
@@ -58,11 +59,20 @@ const getters = {
   getRecs: state => {
     return state.recs
   },
+  getIsProcessing: state => {
+    return state.isProcessing
+  },
 }
 
 const mutations = {
   setIsAdd: (state, payload) => {
     state.isAdd = payload
+  },
+  setIsProcessing: (state, payload) => {
+    state.isProcessing = payload
+  },
+  setRecs: (state, payload) => {
+    state.recs = payload
   },
   setSelectedRec: (state, payload) => {
     if (_.isEmpty(payload)) {
@@ -84,7 +94,10 @@ const mutations = {
   showDetail: (state, payload) => {
     state.isDetailShown = payload
   },
-  fetchRecs: (state, done) => {
+}
+
+const actions = {
+  fetchRecs: ({commit, getters}, done) => {
     // done is passed from @refresh="fetchRecs" of Contact q-data-table
     _ax
       .get('/api', {
@@ -103,10 +116,41 @@ const mutations = {
         },
       })
       .then(({data}) => {
-        state.recs = data.getAllContacts
+        commit('setRecs', data.getAllContacts)
         done()
       })
       .catch(err => {
+        _alert(err, 'negative')
+        done()
+      })
+  },
+  updateSelectedRec: ({commit, getters}, done) => {
+    commit('setIsProcessing', true)
+    let query = `
+      mutation ($input: ContactInput) {
+        saveContact(input: $input) {
+          id
+          name
+          tel
+          email
+          position
+          note
+          clientId
+        }
+      }`
+    let variables = {input: getters.getSelectedRec}
+    _ax({
+      method: 'post',
+      url: '/api',
+      headers: {'Content-Type': 'application/json'},
+      data: JSON.stringify({query, variables}),
+    })
+      .then(({data}) => {
+        commit('setIsProcessing', false)
+        commit('applyChange', data.saveClient)
+      })
+      .catch(err => {
+        commit('setIsProcessing', false)
         _alert(err, 'negative')
         done()
       })
@@ -118,4 +162,5 @@ export default {
   state,
   getters,
   mutations,
+  actions,
 }
