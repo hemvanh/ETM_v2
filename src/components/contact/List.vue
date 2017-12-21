@@ -3,7 +3,7 @@
     <q-data-table class="full-height" :data="getRecs" :config="config" :columns="getFields" @refresh="fetchRecs">
       <!-- Custom renderer when user selected one or more rows -->
       <span slot="selection" slot-scope="selection">
-        <q-btn color="primary" @click="editRec(selection)">
+        <q-btn color="primary" @click="popEdit(selection)">
           <i>edit</i>
         </q-btn>
         <q-btn color="negative" @click="deleteRec(selection)" :disabled="isDeleting">
@@ -12,7 +12,7 @@
       </span>
     </q-data-table>
     <pop-detail></pop-detail>
-    <q-btn round color="positive" class="fixed btnAdd" @click="addRec">
+    <q-btn round color="positive" class="fixed btnAdd" @click="popAdd">
       <q-icon name="add" />
     </q-btn>
   </div>
@@ -21,7 +21,7 @@
 <script>
 import mxGrid from '../_mixins/Grid'
 import popDetail from './Detail.vue'
-import {mapGetters, mapMutations, mapActions} from 'vuex'
+import {mapGetters, mapActions} from 'vuex'
 // import {Toast} from 'quasar'
 
 export default {
@@ -37,19 +37,7 @@ export default {
     ...mapGetters('mContact', ['getFields', 'getRecs']),
   },
   methods: {
-    ...mapMutations('mContact', ['setSelectedRec', 'showDetail', 'setIsAdd']),
-    ...mapActions('mContact', ['fetchRecs']),
-    addRec() {
-      this.setSelectedRec()
-      this.showDetail(true)
-      this.setIsAdd(true)
-    },
-    editRec(rec) {
-      this.setSelectedRec(rec)
-      this.showDetail(true)
-      this.setIsAdd(false)
-    },
-    deleteRec() {},
+    ...mapActions('mContact', ['fetchRecs', 'popEdit', 'popAdd', 'deleteRec']),
   },
 }
 </script>

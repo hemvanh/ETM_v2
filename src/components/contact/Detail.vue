@@ -58,7 +58,7 @@ export default {
     ...mapGetters('mContact', ['getSelectedRec', 'getIsAdd', 'getFields', 'getIsProcessing']),
   },
   methods: {
-    ...mapMutations('mContact', ['discardChange', 'applyChange']),
+    ...mapMutations('mContact', ['discardChange']),
     ...mapActions('mContact', ['updateSelectedRec']),
     save(_, done) {
       // Actions only allow a single payload (_, done) is passed by Quasar

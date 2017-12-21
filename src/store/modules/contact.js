@@ -40,10 +40,11 @@ const state = {
   ],
   isDetailShown: false,
   isAdd: false,
+  isProcessing: false,
+  isDeleting: false,
   selectedRec: {},
   backupRec: {},
   recs: [],
-  isProcessing: false,
 }
 
 const getters = {
@@ -62,6 +63,9 @@ const getters = {
   getIsProcessing: state => {
     return state.isProcessing
   },
+  getIsDeleting: state => {
+    return state.isDeleting
+  },
 }
 
 const mutations = {
@@ -70,6 +74,9 @@ const mutations = {
   },
   setIsProcessing: (state, payload) => {
     state.isProcessing = payload
+  },
+  setIsDeleting: (state, payload) => {
+    state.isDeleting = payload
   },
   setRecs: (state, payload) => {
     state.recs = payload
@@ -97,6 +104,16 @@ const mutations = {
 }
 
 const actions = {
+  popEdit({commit}, rec) {
+    commit('setSelectedRec', rec)
+    commit('showDetail', true)
+    commit('setIsAdd', false)
+  },
+  popAdd({commit}) {
+    commit('setSelectedRec')
+    commit('showDetail', true)
+    commit('setIsAdd', true)
+  },
   fetchRecs: ({commit, getters}, done) => {
     // done is passed from @refresh="fetchRecs" of Contact q-data-table
     _ax
@@ -154,6 +171,30 @@ const actions = {
         _alert(err, 'negative')
         done()
       })
+  },
+  deleteRec({commit, getters}, selection) {
+    commit('setIsDeleting', true)
+    let ids = Array.from(selection.rows, client => client.data.id)
+    let query = `
+      mutation ($ids: [Int]) {
+        deleteContact(ids: $ids)
+      }`
+    let variables = {ids}
+    _ax({
+      method: 'post',
+      url: '/api',
+      headers: {'Content-Type': 'application/json'},
+      data: JSON.stringify({query, variables}),
+    }).then(({data}) => {
+      commit('setIsDeleting', false)
+      _alert(data.deleteContact + ' client(s) deleted', 'info')
+      _.remove(getters.getRecs, client => {
+        return ids.includes(client.id)
+      })
+      // this is to re-activate the grid with new data
+      // this.data = Object.assign([], this.data) --> it is ok too
+      commit('setRecs', _.clone(getters.getRecs))
+    })
   },
 }
 
