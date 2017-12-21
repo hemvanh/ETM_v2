@@ -45,6 +45,7 @@ const state = {
   selectedRec: {},
   backupRec: {},
   recs: [],
+  clientList: [],
 }
 
 const getters = {
@@ -66,6 +67,9 @@ const getters = {
   getIsDeleting: state => {
     return state.isDeleting
   },
+  getClientList: state => {
+    return state.clientList
+  },
 }
 
 const mutations = {
@@ -80,6 +84,9 @@ const mutations = {
   },
   setRecs: (state, payload) => {
     state.recs = payload
+  },
+  setClientList(state, payload) {
+    state.clientList = payload
   },
   setSelectedRec: (state, payload) => {
     if (_.isEmpty(payload)) {
@@ -195,6 +202,25 @@ const actions = {
       // this.data = Object.assign([], this.data) --> it is ok too
       commit('setRecs', _.clone(getters.getRecs))
     })
+  },
+  fetchClients({commit}) {
+    _ax
+      .get('/api', {
+        params: {
+          query: `{
+            getAllClients {
+              value
+              label
+            }
+        }`,
+        },
+      })
+      .then(({data}) => {
+        commit('setClientList', data.getAllClients)
+      })
+      .catch(err => {
+        _alert(err, 'negative')
+      })
   },
 }
 

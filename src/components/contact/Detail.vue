@@ -17,7 +17,7 @@
       </q-toolbar>
       <div style="padding: 0 15px">
         <q-field icon="face" :label-width="3" label="Client">
-          <q-select filter v-model="getSelectedRec.clientId" float-label="Tìm thông tin Khách Hàng ..." radio :options="clientList" dark color="red" />
+          <q-select filter v-model="getSelectedRec.clientId" float-label="Tìm thông tin Khách Hàng ..." radio :options="getClientList" dark color="red" />
         </q-field>
         <!-- <q-field :key="field.field" v-for="field in getFields" label-width="3" :icon="field.icon" :label="field.label" :helper="field.desc" error-label="Some error"> -->
         <q-field :key="field.field" v-for="field in getFields" :label-width="3" :icon="field.icon" :label="field.label">
@@ -32,34 +32,15 @@
 import {mapGetters, mapMutations, mapActions} from 'vuex'
 
 export default {
-  data: () => ({
-    clientList: [
-      {
-        value: 1, // The value given, when selected
-        label: 'Romania', // The value displayed as main label for this suggested selection
-        sublabel: 'Continent: Europe', // optional
-        stamp: '18 mil', // optional
-      },
-      {
-        value: 2, // The value given, when selected
-        label: 'Lollipop', // The value displayed as main label for this suggested selection
-        sublabel: 'Continent: Europe', // optional
-        stamp: '18 mil', // optional
-      },
-      {
-        value: 3, // The value given, when selected
-        label: 'Morning', // The value displayed as main label for this suggested selection
-        sublabel: 'Continent: Europe', // optional
-        stamp: '18 mil', // optional
-      },
-    ],
-  }),
+  mounted() {
+    this.fetchClients()
+  },
   computed: {
-    ...mapGetters('mContact', ['getSelectedRec', 'getIsAdd', 'getFields', 'getIsProcessing']),
+    ...mapGetters('mContact', ['getClientList', 'getSelectedRec', 'getIsAdd', 'getFields', 'getIsProcessing']),
   },
   methods: {
     ...mapMutations('mContact', ['discardChange']),
-    ...mapActions('mContact', ['updateSelectedRec']),
+    ...mapActions('mContact', ['updateSelectedRec', 'fetchClients']),
     save(_, done) {
       // Actions only allow a single payload (_, done) is passed by Quasar
       this.updateSelectedRec(done)
