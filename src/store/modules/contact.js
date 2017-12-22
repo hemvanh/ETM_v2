@@ -8,15 +8,15 @@ const state = {
       field: 'name',
       filter: true,
       sort: true,
+      width: '150px',
       type: 'string',
       icon: 'assignment_ind',
       desc: 'Tên liên hệ',
     },
-    {label: 'Tel', field: 'tel', width: '120px', filter: true, type: 'string', icon: 'call', desc: ''},
+    {label: 'Tel', field: 'tel', width: '150px', filter: true, type: 'string', icon: 'call', desc: ''},
     {
       label: 'Email',
       field: 'email',
-      width: '100px',
       filter: true,
       type: 'string',
       icon: 'email',
@@ -24,6 +24,7 @@ const state = {
     {
       label: 'Position',
       field: 'position',
+      width: '180px',
       filter: true,
       type: 'string',
       icon: 'work',
@@ -32,6 +33,7 @@ const state = {
     {
       label: 'Note',
       field: 'note',
+      width: '200px',
       filter: true,
       type: 'string',
       icon: 'note',
