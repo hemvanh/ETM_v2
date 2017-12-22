@@ -2,10 +2,10 @@
   <q-modal content-classes="bg-grey-9" :no-backdrop-dismiss="true" :no-esc-dismiss="true" v-model="$store.state.mClient.isDetailShown" :content-css="{minWidth: '70vw', minHeight: '70vh'}">
     <q-modal-layout>
       <q-toolbar slot="header">
-        <q-btn color="warning" @click="discardChange" :disabled="isProcessing">
+        <q-btn color="warning" @click="discardChange" :disabled="getIsProcessing">
           <q-icon name="block" /> Discard
         </q-btn>
-        <q-btn color="positive" @click="updateSelectedClient">
+        <q-btn color="positive" @click="save">
           <q-icon :name="getIsAdd?'add':'save'" /> {{getIsAdd?"Add":"Save"}}
           <span slot="loading">
             <q-spinner-hourglass class="on-left" /> {{getIsAdd?"Adding...":" Saving..."}}
@@ -43,52 +43,17 @@
 </template>
 
 <script>
-import {mapGetters, mapMutations} from 'vuex'
-import {Toast} from 'quasar'
+import {mapGetters, mapMutations, mapActions} from 'vuex'
 
 export default {
-  data: () => ({
-    isProcessing: false,
-  }),
   computed: {
-    ...mapGetters('mClient', ['getSelectedRec', 'getIsAdd', 'getFields']),
+    ...mapGetters('mClient', ['getSelectedRec', 'getIsAdd', 'getFields', 'getIsProcessing']),
   },
   methods: {
-    ...mapMutations('mClient', ['discardChange', 'applyChange']),
-    updateSelectedClient(e, done) {
-      this.isProcessing = true
-      let query = `
-        mutation ($input: ClientInput) {
-          saveClient(input: $input) {
-            id
-            code
-            name
-            tax_code
-            invoice_addr
-            delivery_addr
-            tel
-            fax
-          }
-        }`
-      let variables = {input: this.getSelectedRec}
-      this.$http({
-        method: 'post',
-        url: '/api',
-        headers: {'Content-Type': 'application/json'},
-        data: JSON.stringify({query, variables}),
-      })
-        .then(({data}) => {
-          this.isProcessing = false
-          this.applyChange(data.saveClient)
-        })
-        .catch(err => {
-          this.isProcessing = false
-          Toast.create.negative({
-            html: err.toString(),
-            timeout: 2000,
-          })
-          done()
-        })
+    ...mapMutations('mClient', ['discardChange']),
+    ...mapActions('mClient', ['updateSelectedRec']),
+    save(_, done) {
+      this.updateSelectedRec(done)
     },
   },
 }

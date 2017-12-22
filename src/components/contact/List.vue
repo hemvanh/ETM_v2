@@ -6,7 +6,7 @@
         <q-btn color="primary" @click="popEdit(selection)">
           <i>edit</i>
         </q-btn>
-        <q-btn color="negative" @click="deleteRec(selection)" :disabled="isDeleting">
+        <q-btn color="negative" @click="deleteRec(selection)" :disabled="getIsDeleting">
           <i>delete</i>
         </q-btn>
       </span>
@@ -22,19 +22,17 @@
 import mxGrid from '../_mixins/Grid'
 import popDetail from './Detail.vue'
 import {mapGetters, mapActions} from 'vuex'
-// import {Toast} from 'quasar'
 
 export default {
   components: {popDetail},
   mixins: [mxGrid],
   data: () => ({
-    isDeleting: false,
     config: {
       title: '<span class="text-negative"><b>Contacts Information</b></span>',
     },
   }),
   computed: {
-    ...mapGetters('mContact', ['getFields', 'getRecs']),
+    ...mapGetters('mContact', ['getFields', 'getRecs', 'getIsDeleting']),
   },
   methods: {
     ...mapActions('mContact', ['fetchRecs', 'popEdit', 'popAdd', 'deleteRec']),

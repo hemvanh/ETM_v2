@@ -1,4 +1,5 @@
 import _ from 'lodash'
+import {_ax, _alert} from '../../libs/util'
 
 const state = {
   fields: [
@@ -51,8 +52,11 @@ const state = {
   ],
   isDetailShown: false,
   isAdd: false,
+  isDeleting: false,
+  isProcessing: false,
   selectedRec: {},
   backupRec: {},
+  recs: [],
 }
 
 const getters = {
@@ -65,11 +69,29 @@ const getters = {
   getFields: state => {
     return state.fields
   },
+  getRecs: state => {
+    return state.recs
+  },
+  getIsDeleting: state => {
+    return state.isDeleting
+  },
+  getIsProcessing: state => {
+    return state.isProcessing
+  },
 }
 
 const mutations = {
   setIsAdd: (state, payload) => {
     state.isAdd = payload
+  },
+  setRecs(state, payload) {
+    state.recs = payload
+  },
+  setIsDeleting(state, payload) {
+    state.isDeleting = payload
+  },
+  setIsProcessing(state, payload) {
+    state.isProcessing = payload
   },
   setSelectedRec: (state, payload) => {
     if (_.isEmpty(payload)) {
@@ -93,9 +115,115 @@ const mutations = {
   },
 }
 
+const actions = {
+  popEdit({commit}, rec) {
+    commit('setSelectedRec', rec)
+    commit('showDetail', true)
+    commit('setIsAdd', false)
+  },
+  popAdd({commit}) {
+    commit('setSelectedRec')
+    commit('showDetail', true)
+    commit('setIsAdd', true)
+  },
+  fetchRecs({commit}, done) {
+    _ax
+      .get('/api', {
+        params: {
+          query: `{
+          getAllClients {
+            id
+            code
+            name
+            tax_code
+            invoice_addr
+            delivery_addr
+            tel
+            fax
+            contacts {
+              id
+              name
+              tel
+              email
+              position
+              note
+              clientId
+            }
+          }
+        }`,
+        },
+      })
+      .then(({data}) => {
+        commit('setRecs', data.getAllClients)
+        done()
+      })
+      .catch(err => {
+        _alert(err, 'negative')
+        done()
+      })
+  },
+  updateSelectedRec({commit, getters}, done) {
+    commit('setIsProcessing', true)
+    let query = `
+      mutation ($input: ClientInput) {
+        saveClient(input: $input) {
+          id
+          code
+          name
+          tax_code
+          invoice_addr
+          delivery_addr
+          tel
+          fax
+        }
+      }`
+    let variables = {input: getters.getSelectedRec}
+    _ax({
+      method: 'post',
+      url: '/api',
+      headers: {'Content-Type': 'application/json'},
+      data: JSON.stringify({query, variables}),
+    })
+      .then(({data}) => {
+        commit('setIsProcessing', false)
+        commit('applyChange', data.saveClient)
+      })
+      .catch(err => {
+        commit('setIsProcessing', false)
+        _alert(err, 'negative')
+        done()
+      })
+  },
+  deleteRec({commit, getters}, selection) {
+    commit('setIsDeleting', true)
+    let ids = Array.from(selection.rows, client => client.data.id)
+    let query = `
+      mutation ($ids: [Int]) {
+        deleteClient(ids: $ids)
+      }`
+    let variables = {ids}
+    _ax({
+      method: 'post',
+      url: '/api',
+      headers: {'Content-Type': 'application/json'},
+      data: JSON.stringify({query, variables}),
+    }).then(({data}) => {
+      commit('setIsDeleting', false)
+      _alert(data.deleteClient + ' client(s) deleted', 'info')
+      _.remove(getters.getRecs, client => {
+        return ids.includes(client.id)
+      })
+      // this is to re-activate the grid with new data
+      // this.data = Object.assign([], this.data) --> it is ok too
+      commit('setRecs', _.clone(getters.getRecs))
+    })
+  },
+}
+
 export default {
   namespaced: true,
   state,
   getters,
   mutations,
+  actions,
 }

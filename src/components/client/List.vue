@@ -1,18 +1,18 @@
 <template>
   <div>
-    <q-data-table class="full-height" :data="data" :config="config" :columns="getFields" @refresh="refresh">
+    <q-data-table class="full-height" :data="getRecs" :config="config" :columns="getFields" @refresh="fetchRecs">
       <!-- Custom renderer when user selected one or more rows -->
       <span slot="selection" slot-scope="selection">
-        <q-btn color="primary" @click="editClient(selection)">
+        <q-btn color="primary" @click="popEdit(selection)">
           <i>edit</i>
         </q-btn>
-        <q-btn color="negative" @click="deleteClient(selection)" :disabled="isDeleting">
+        <q-btn color="negative" @click="deleteRec(selection)" :disabled="getIsDeleting">
           <i>delete</i>
         </q-btn>
       </span>
     </q-data-table>
     <pop-detail></pop-detail>
-    <q-btn round color="positive" class="fixed btnAdd" @click="addClient">
+    <q-btn round color="positive" class="fixed btnAdd" @click="popAdd">
       <q-icon name="add" />
     </q-btn>
   </div>
@@ -20,9 +20,8 @@
 <script>
 import mxGrid from '../_mixins/Grid'
 import popDetail from './Detail.vue'
-import {mapMutations, mapGetters} from 'vuex'
-import {Toast} from 'quasar'
-import _ from 'lodash'
+import {mapGetters, mapActions} from 'vuex'
+
 export default {
   components: {
     popDetail,
@@ -30,92 +29,16 @@ export default {
   mixins: [mxGrid],
   data() {
     return {
-      isDeleting: false,
       config: {
         title: '<span class="text-negative"><b>Clients Information</b></span>',
       },
     }
   },
   computed: {
-    ...mapGetters('mClient', ['getFields']),
+    ...mapGetters('mClient', ['getFields', 'getRecs', 'getIsDeleting']),
   },
   methods: {
-    ...mapMutations('mClient', ['setSelectedRec', 'showDetail', 'setIsAdd']),
-    editClient(client) {
-      this.setSelectedRec(client)
-      this.showDetail(true)
-      this.setIsAdd(false)
-    },
-    addClient() {
-      this.setSelectedRec()
-      this.showDetail(true)
-      this.setIsAdd(true)
-    },
-    deleteClient(selection) {
-      this.isDeleting = true
-      let ids = Array.from(selection.rows, client => client.data.id)
-      let query = `
-        mutation ($ids: [Int]) {
-          deleteClient(ids: $ids)
-        }`
-      let variables = {ids}
-      this.$http({
-        method: 'post',
-        url: '/api',
-        headers: {'Content-Type': 'application/json'},
-        data: JSON.stringify({query, variables}),
-      }).then(({data}) => {
-        this.isDeleting = false
-        Toast.create.info({
-          html: data.deleteClient + ' client(s) deleted',
-          timeout: 2000,
-        })
-        _.remove(this.data, client => {
-          return ids.includes(client.id)
-        })
-        // this is to re-activate the grid with new data
-        // this.data = Object.assign([], this.data) --> it is ok too
-        this.data = _.clone(this.data)
-      })
-    },
-    refresh(done) {
-      this.$http
-        .get('/api', {
-          params: {
-            query: `{
-            getAllClients {
-              id
-              code
-              name
-              tax_code
-              invoice_addr
-              delivery_addr
-              tel
-              fax
-              contacts {
-                id
-                name
-                tel
-                email
-                position
-                note
-              }
-            }
-          }`,
-          },
-        })
-        .then(({data}) => {
-          this.data = data.getAllClients
-          done()
-        })
-        .catch(err => {
-          Toast.create.negative({
-            html: err.toString(),
-            timeout: 2000,
-          })
-          done()
-        })
-    },
+    ...mapActions('mClient', ['fetchRecs', 'popAdd', 'popEdit', 'deleteRec']),
   },
 }
 </script>
