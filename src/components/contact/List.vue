@@ -10,6 +10,8 @@
           <i>delete</i>
         </q-btn>
       </span>
+      <!-- Custom renderer for "source" column -->
+      <q-btn round icon="edit" color="primary" small slot="col-id" slot-scope="cell" />
     </q-data-table>
     <pop-detail></pop-detail>
     <q-btn round color="positive" class="fixed btnAdd" @click="popAdd">
@@ -28,7 +30,7 @@ export default {
   mixins: [mxGrid],
   data: () => ({
     config: {
-      title: '<span class="text-negative"><b>Contacts Information</b></span>',
+      title: '<span class="form-label text-white bg-negative"><b>Contacts Information</b></span>',
     },
   }),
   computed: {
@@ -69,5 +71,30 @@ export default {
 .btnAdd {
   right: 25px;
   bottom: 92px;
+}
+
+/* styling for Edit column */
+.q-btn-round.q-btn-small {
+  height: 28px;
+  width: 28px;
+  margin-left: 3px !important;
+}
+.q-btn-small .q-icon {
+  font-size: 18px !important;
+}
+.cell-edit {
+  padding: 4px 0px !important;
+}
+.form-label {
+  width: 100%;
+  padding: 5px;
+  text-align: center;
+  border-radius: 10px;
+  display: inline-block;
+}
+@media (max-width: 600px) {
+  .q-btn-round.q-btn-small {
+    margin-left: 8px !important;
+  }
 }
 </style>
