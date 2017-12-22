@@ -1,5 +1,5 @@
 import _ from 'lodash'
-import {_ax, _alert} from '../../libs/util'
+import {_post, _get, _alert} from '../../libs/util'
 
 const state = {
   fields: [
@@ -123,22 +123,17 @@ const actions = {
   },
   fetchRecs: ({commit, getters}, done) => {
     // done is passed from @refresh="fetchRecs" of Contact q-data-table
-    _ax
-      .get('/api', {
-        params: {
-          query: `{
-          getAllContacts {
-            id
-            name
-            tel
-            email
-            position
-            note
-            clientId
-          }
-        }`,
-        },
-      })
+    _get(`{
+      getAllContacts {
+        id
+        name
+        tel
+        email
+        position
+        note
+        clientId
+      }
+    }`)
       .then(({data}) => {
         commit('setRecs', data.getAllContacts)
         done()
@@ -150,8 +145,9 @@ const actions = {
   },
   updateSelectedRec: ({commit, getters}, done) => {
     commit('setIsProcessing', true)
-    let query = `
-      mutation ($input: ContactInput) {
+    _post(
+      getters.getSelectedRec,
+      `mutation ($input: ContactInput) {
         saveContact(input: $input) {
           id
           name
@@ -162,13 +158,7 @@ const actions = {
           clientId
         }
       }`
-    let variables = {input: getters.getSelectedRec}
-    _ax({
-      method: 'post',
-      url: '/api',
-      headers: {'Content-Type': 'application/json'},
-      data: JSON.stringify({query, variables}),
-    })
+    )
       .then(({data}) => {
         commit('setIsProcessing', false)
         commit('applyChange', data.saveClient)
@@ -182,17 +172,12 @@ const actions = {
   deleteRec({commit, getters}, selection) {
     commit('setIsDeleting', true)
     let ids = Array.from(selection.rows, client => client.data.id)
-    let query = `
-      mutation ($ids: [Int]) {
-        deleteContact(ids: $ids)
-      }`
-    let variables = {ids}
-    _ax({
-      method: 'post',
-      url: '/api',
-      headers: {'Content-Type': 'application/json'},
-      data: JSON.stringify({query, variables}),
-    }).then(({data}) => {
+    _post(
+      ids,
+      `mutation ($input: [Int]) {
+      deleteContact(input: $input)
+    }`
+    ).then(({data}) => {
       commit('setIsDeleting', false)
       _alert(data.deleteContact + ' client(s) deleted', 'info')
       _.remove(getters.getRecs, client => {
@@ -204,17 +189,12 @@ const actions = {
     })
   },
   fetchClients({commit}) {
-    _ax
-      .get('/api', {
-        params: {
-          query: `{
-            getAllClients {
-              value
-              label
-            }
-        }`,
-        },
-      })
+    _get(`{
+        getAllClients {
+          value
+          label
+        }
+    }`)
       .then(({data}) => {
         commit('setClientList', data.getAllClients)
       })

@@ -9,11 +9,25 @@ const _ax = axios.create({
   }),
 })
 
+const _get = query =>
+  _ax.get('/api', {
+    params: {
+      query: query,
+    },
+  })
+
+const _post = (input, query) =>
+  _ax({
+    method: 'post',
+    url: '/api',
+    headers: {'Content-Type': 'application/json'},
+    data: JSON.stringify({query, variables: {input}}),
+  })
+
 const _alert = (msg, type) => {
   Toast.create[type]({
     html: msg.toString(),
     timeout: 2000,
   })
 }
-
-export {_ax, _alert}
+export {_ax, _alert, _get, _post}

@@ -1,5 +1,5 @@
 import _ from 'lodash'
-import {_ax, _alert} from '../../libs/util'
+import {_post, _get, _alert} from '../../libs/util'
 
 const state = {
   fields: [
@@ -127,32 +127,27 @@ const actions = {
     commit('setIsAdd', true)
   },
   fetchRecs({commit}, done) {
-    _ax
-      .get('/api', {
-        params: {
-          query: `{
-          getAllClients {
-            id
-            code
-            name
-            tax_code
-            invoice_addr
-            delivery_addr
-            tel
-            fax
-            contacts {
-              id
-              name
-              tel
-              email
-              position
-              note
-              clientId
-            }
-          }
-        }`,
-        },
-      })
+    _get(`{
+      getAllClients {
+        id
+        code
+        name
+        tax_code
+        invoice_addr
+        delivery_addr
+        tel
+        fax
+        contacts {
+          id
+          name
+          tel
+          email
+          position
+          note
+          clientId
+        }
+      }
+    }`)
       .then(({data}) => {
         commit('setRecs', data.getAllClients)
         done()
@@ -164,8 +159,9 @@ const actions = {
   },
   updateSelectedRec({commit, getters}, done) {
     commit('setIsProcessing', true)
-    let query = `
-      mutation ($input: ClientInput) {
+    _post(
+      getters.getSelectedRec,
+      `mutation ($input: ClientInput) {
         saveClient(input: $input) {
           id
           code
@@ -177,13 +173,7 @@ const actions = {
           fax
         }
       }`
-    let variables = {input: getters.getSelectedRec}
-    _ax({
-      method: 'post',
-      url: '/api',
-      headers: {'Content-Type': 'application/json'},
-      data: JSON.stringify({query, variables}),
-    })
+    )
       .then(({data}) => {
         commit('setIsProcessing', false)
         commit('applyChange', data.saveClient)
@@ -197,17 +187,13 @@ const actions = {
   deleteRec({commit, getters}, selection) {
     commit('setIsDeleting', true)
     let ids = Array.from(selection.rows, client => client.data.id)
-    let query = `
-      mutation ($ids: [Int]) {
-        deleteClient(ids: $ids)
+    _post(
+      ids,
+      `
+      mutation ($input: [Int]) {
+        deleteClient(input: $input)
       }`
-    let variables = {ids}
-    _ax({
-      method: 'post',
-      url: '/api',
-      headers: {'Content-Type': 'application/json'},
-      data: JSON.stringify({query, variables}),
-    }).then(({data}) => {
+    ).then(({data}) => {
       commit('setIsDeleting', false)
       _alert(data.deleteClient + ' client(s) deleted', 'info')
       _.remove(getters.getRecs, client => {
