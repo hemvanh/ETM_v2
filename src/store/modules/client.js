@@ -4,6 +4,12 @@ import {_post, _get, _alert} from '../../libs/util'
 const state = {
   fields: [
     {
+      field: 'id',
+      width: '34px',
+      hidden: true,
+      classes: 'cell-edit',
+    },
+    {
       label: 'Code',
       field: 'code',
       width: '75px',

@@ -21,7 +21,7 @@
         <q-tab slot="title" name="client-contact" icon="group" />
         <!-- Targets -->
         <q-tab-pane name="client-info">
-          <q-field :key="field.field" v-for="field in getFields" :label-width="3" :icon="field.icon" :label="field.label" :count="255" :helper="field.desc" error-label="Some error">
+          <q-field :key="field.field" v-for="field in getFields" v-if="!field.hidden" :label-width="3" :icon="field.icon" :label="field.label" :count="255" :helper="field.desc" error-label="Some error">
             <q-input v-model="getSelectedRec[field.field]" dark color="yellow" />
           </q-field>
         </q-tab-pane>
