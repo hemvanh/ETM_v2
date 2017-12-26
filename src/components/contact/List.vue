@@ -10,8 +10,8 @@
           <i>delete</i>
         </q-btn>
       </span>
-      <!-- Custom renderer for "source" column -->
-      <q-btn round icon="edit" color="primary" small slot="col-id" slot-scope="cell" />
+      <!-- Custom renderer for "Edit" column -->
+      <q-btn round icon="edit" color="primary" small slot="col-id" slot-scope="cell" @click="edit(cell.data)" />
     </q-data-table>
     <pop-detail></pop-detail>
     <q-btn round color="positive" class="fixed btnAdd" @click="popAdd">
@@ -24,6 +24,7 @@
 import mxGrid from '../_mixins/Grid'
 import popDetail from './Detail.vue'
 import {mapGetters, mapActions} from 'vuex'
+import _ from 'lodash'
 
 export default {
   components: {popDetail},
@@ -38,6 +39,9 @@ export default {
   },
   methods: {
     ...mapActions('mContact', ['fetchRecs', 'popEdit', 'popAdd', 'deleteRec']),
+    edit(id) {
+      this.popEdit({rows: [{data: _.find(this.getRecs, {id})}]})
+    },
   },
 }
 </script>

@@ -10,6 +10,8 @@
           <i>delete</i>
         </q-btn>
       </span>
+      <!-- Custom renderer for "Edit" column -->
+      <q-btn round icon="edit" color="primary" small slot="col-id" slot-scope="cell" @click="edit(cell.data)" />
     </q-data-table>
     <pop-detail></pop-detail>
     <q-btn round color="positive" class="fixed btnAdd" @click="popAdd">
@@ -21,6 +23,7 @@
 import mxGrid from '../_mixins/Grid'
 import popDetail from './Detail.vue'
 import {mapGetters, mapActions} from 'vuex'
+import _ from 'lodash'
 
 export default {
   components: {
@@ -30,7 +33,7 @@ export default {
   data() {
     return {
       config: {
-        title: '<span class="text-negative"><b>Clients Information</b></span>',
+        title: '<span class="form-label text-white bg-negative"><b>Clients Information</b></span>',
       },
     }
   },
@@ -39,6 +42,9 @@ export default {
   },
   methods: {
     ...mapActions('mClient', ['fetchRecs', 'popAdd', 'popEdit', 'deleteRec']),
+    edit(id) {
+      this.popEdit({rows: [{data: _.find(this.getRecs, {id})}]})
+    },
   },
 }
 </script>
@@ -72,6 +78,31 @@ export default {
 .btnAdd {
   right: 25px;
   bottom: 92px;
+}
+
+/* styling for Edit column */
+.q-btn-round.q-btn-small {
+  height: 28px;
+  width: 28px;
+  margin-left: 3px !important;
+}
+.q-btn-small .q-icon {
+  font-size: 18px !important;
+}
+.cell-edit {
+  padding: 4px 0px !important;
+}
+.form-label {
+  width: 100%;
+  padding: 5px;
+  text-align: center;
+  border-radius: 10px;
+  display: inline-block;
+}
+@media (max-width: 600px) {
+  .q-btn-round.q-btn-small {
+    margin-left: 8px !important;
+  }
 }
 </style>
 

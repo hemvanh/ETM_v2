@@ -19,8 +19,7 @@
         <q-field icon="face" :label-width="3" label="Client">
           <q-select filter v-model="getSelectedRec.clientId" float-label="Tìm thông tin Khách Hàng ..." radio :options="getClientList" dark color="red" />
         </q-field>
-        <!-- <q-field :key="field.field" v-for="field in getFields" label-width="3" :icon="field.icon" :label="field.label" :helper="field.desc" error-label="Some error"> -->
-        <q-field :key="field.field" v-for="field in getFields" :label-width="3" :icon="field.icon" :label="field.label">
+        <q-field :key="field.id" v-for="field in getFields" v-if="!field.hidden" :label-width="3" :icon="field.icon" :label="field.label">
           <q-input v-model="getSelectedRec[field.field]" dark color="yellow" />
         </q-field>
       </div>
