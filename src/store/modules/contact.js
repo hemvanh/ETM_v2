@@ -4,60 +4,57 @@ import {_post, _get, _alert} from '../../libs/util'
 const state = {
   fields: [
     {
-      label: 'Code',
-      field: 'code',
-      width: '75px',
-      filter: true,
-      sort: true,
-      type: 'string',
-      icon: 'book',
-      desc: 'Mã công ty',
+      // label: 'Edit',
+      field: 'id',
+      width: '34px',
+      hidden: true,
+      classes: 'cell-edit',
     },
     {
       label: 'Name',
       field: 'name',
       filter: true,
       sort: true,
+      width: '150px',
       type: 'string',
       icon: 'assignment_ind',
-      desc: 'Tên đăng ký Công ty',
+      desc: 'Tên liên hệ',
     },
+    {label: 'Tel', field: 'tel', width: '150px', filter: true, type: 'string', icon: 'call', desc: ''},
     {
-      label: 'Tax Code',
-      field: 'tax_code',
-      width: '100px',
+      label: 'Email',
+      field: 'email',
       filter: true,
       type: 'string',
-      icon: 'receipt',
-      desc: 'Mã số thuế',
+      icon: 'email',
     },
     {
-      label: 'Address',
-      field: 'invoice_addr',
+      label: 'Position',
+      field: 'position',
+      width: '180px',
       filter: true,
       type: 'string',
-      icon: 'location_on',
-      desc: 'Địa chỉ xuất hóa đơn',
+      icon: 'work',
+      desc: 'Chức vụ',
     },
     {
-      label: 'Delivery',
-      field: 'delivery_addr',
+      label: 'Note',
+      field: 'note',
+      width: '200px',
       filter: true,
-      hidden: true,
       type: 'string',
-      icon: 'motorcycle',
-      desc: 'Địa chỉ nhận hàng',
+      icon: 'note',
+      desc: 'Ghi chú thêm',
     },
-    {label: 'Tel', field: 'tel', width: '120px', filter: true, type: 'string', icon: 'call', desc: ''},
-    {label: 'Fax', field: 'fax', width: '120px', filter: true, type: 'string', icon: 'attachment', desc: ''},
   ],
   isDetailShown: false,
   isAdd: false,
-  isDeleting: false,
   isProcessing: false,
+  isDeleting: false,
   selectedRec: {},
   backupRec: {},
   recs: [],
+  clientList: [],
 }
 
 const getters = {
@@ -73,11 +70,14 @@ const getters = {
   getRecs: state => {
     return state.recs
   },
+  getIsProcessing: state => {
+    return state.isProcessing
+  },
   getIsDeleting: state => {
     return state.isDeleting
   },
-  getIsProcessing: state => {
-    return state.isProcessing
+  getClientList: state => {
+    return state.clientList
   },
 }
 
@@ -85,14 +85,17 @@ const mutations = {
   setIsAdd: (state, payload) => {
     state.isAdd = payload
   },
-  setRecs(state, payload) {
-    state.recs = payload
+  setIsProcessing: (state, payload) => {
+    state.isProcessing = payload
   },
-  setIsDeleting(state, payload) {
+  setIsDeleting: (state, payload) => {
     state.isDeleting = payload
   },
-  setIsProcessing(state, payload) {
-    state.isProcessing = payload
+  setRecs: (state, payload) => {
+    state.recs = payload
+  },
+  setClientList(state, payload) {
+    state.clientList = payload
   },
   setSelectedRec: (state, payload) => {
     if (_.isEmpty(payload)) {
@@ -127,30 +130,21 @@ const actions = {
     commit('showDetail', true)
     commit('setIsAdd', true)
   },
-  fetchRecs({commit}, done) {
+  fetchRecs: ({commit, getters}, done) => {
+    // done is passed from @refresh="fetchRecs" of Contact q-data-table
     _get(`{
-      getAllClients {
+      getAllContacts {
         id
-        code
         name
-        tax_code
-        invoice_addr
-        delivery_addr
         tel
-        fax
-        contacts {
-          id
-          name
-          tel
-          email
-          position
-          note
-          clientId
-        }
+        email
+        position
+        note
+        clientId
       }
     }`)
       .then(({data}) => {
-        commit('setRecs', data.getAllClients)
+        commit('setRecs', data.getAllContacts)
         done()
       })
       .catch(err => {
@@ -158,20 +152,19 @@ const actions = {
         done()
       })
   },
-  updateSelectedRec({commit, getters}, done) {
+  updateSelectedRec: ({commit, getters}, done) => {
     commit('setIsProcessing', true)
     _post(
       getters.getSelectedRec,
-      `mutation ($input: ClientInput) {
-        saveClient(input: $input) {
+      `mutation ($input: ContactInput) {
+        saveContact(input: $input) {
           id
-          code
           name
-          tax_code
-          invoice_addr
-          delivery_addr
           tel
-          fax
+          email
+          position
+          note
+          clientId
         }
       }`
     )
@@ -190,13 +183,12 @@ const actions = {
     let ids = Array.from(selection.rows, client => client.data.id)
     _post(
       ids,
-      `
-      mutation ($input: [Int]) {
-        deleteClient(input: $input)
-      }`
+      `mutation ($input: [Int]) {
+      deleteContact(input: $input)
+    }`
     ).then(({data}) => {
       commit('setIsDeleting', false)
-      _alert(data.deleteClient + ' client(s) deleted', 'info')
+      _alert(data.deleteContact + ' client(s) deleted', 'info')
       _.remove(getters.getRecs, client => {
         return ids.includes(client.id)
       })
@@ -204,6 +196,20 @@ const actions = {
       // this.data = Object.assign([], this.data) --> it is ok too
       commit('setRecs', _.clone(getters.getRecs))
     })
+  },
+  fetchClients({commit}) {
+    _get(`{
+        getAllClients {
+          value
+          label
+        }
+    }`)
+      .then(({data}) => {
+        commit('setClientList', data.getAllClients)
+      })
+      .catch(err => {
+        _alert(err, 'negative')
+      })
   },
 }
 
