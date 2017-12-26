@@ -31,7 +31,11 @@ export default new VueRouter({
       children: [
         {
           path: 'client',
-          component: load('client/ClientList'),
+          component: load('client/List'),
+        },
+        {
+          path: 'contact',
+          component: load('contact/List'),
         },
         {
           path: 'supplier',
