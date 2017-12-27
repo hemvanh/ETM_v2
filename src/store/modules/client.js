@@ -6,7 +6,7 @@ const state = {
     {
       field: 'id',
       width: '34px',
-      deltailHidden: true,
+      detailHidden: true,
       classes: 'cell-edit',
     },
     {
