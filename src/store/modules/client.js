@@ -6,7 +6,7 @@ const state = {
     {
       field: 'id',
       width: '34px',
-      hidden: true,
+      deltailHidden: true,
       classes: 'cell-edit',
     },
     {
@@ -49,7 +49,7 @@ const state = {
       label: 'Delivery',
       field: 'delivery_addr',
       filter: true,
-      hidden: true,
+      colHidden: true,
       type: 'string',
       icon: 'motorcycle',
       desc: 'Địa chỉ nhận hàng',
