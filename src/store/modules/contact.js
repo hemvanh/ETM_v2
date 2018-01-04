@@ -6,7 +6,7 @@ const state = {
     {
       field: 'id',
       width: '34px',
-      hidden: true,
+      detailHidden: true,
       classes: 'cell-edit',
     },
     {
@@ -54,6 +54,7 @@ const state = {
   backupRec: {},
   recs: [],
   clientList: [],
+  supplierList: [],
 }
 
 const getters = {
@@ -78,6 +79,9 @@ const getters = {
   getClientList: state => {
     return state.clientList
   },
+  getSupplierList: state => {
+    return state.supplierList
+  },
 }
 
 const mutations = {
@@ -95,6 +99,9 @@ const mutations = {
   },
   setClientList(state, payload) {
     state.clientList = payload
+  },
+  setSupplierList(state, payload) {
+    state.supplierList = payload
   },
   setSelectedRec: (state, payload) => {
     if (_.isEmpty(payload)) {
@@ -140,6 +147,7 @@ const actions = {
         position
         note
         clientId
+        supplierId
       }
     }`)
       .then(({data}) => {
@@ -164,6 +172,7 @@ const actions = {
           position
           note
           clientId
+          supplierId
         }
       }`
     )
@@ -205,6 +214,20 @@ const actions = {
     }`)
       .then(({data}) => {
         commit('setClientList', data.getAllClients)
+      })
+      .catch(err => {
+        _alert(err, 'negative')
+      })
+  },
+  fetchSuppliers({commit}) {
+    _get(`{
+        getAllSuppliers {
+          value
+          label
+        }
+    }`)
+      .then(({data}) => {
+        commit('setSupplierList', data.getAllSuppliers)
       })
       .catch(err => {
         _alert(err, 'negative')

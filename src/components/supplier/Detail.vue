@@ -1,5 +1,5 @@
 <template>
-  <q-modal content-classes="bg-grey-9" :no-backdrop-dismiss="true" :no-esc-dismiss="true" v-model="$store.state.mClient.isDetailShown" :content-css="{minWidth: '70vw', minHeight: '70vh'}">
+  <q-modal content-classes="bg-grey-9" :no-backdrop-dismiss="true" :no-esc-dismiss="true" v-model="$store.state.mSupplier.isDetailShown" :content-css="{minWidth: '70vw', minHeight: '70vh'}">
     <q-modal-layout>
       <q-toolbar slot="header">
         <q-btn color="warning" @click="discardChange" :disabled="getIsProcessing">
@@ -12,20 +12,20 @@
           </span>
         </q-btn>
         <q-toolbar-title>
-          Client Detail
+          Supplier Detail
         </q-toolbar-title>
       </q-toolbar>
       <q-tabs color="orange" inverted no-pane-border>
         <!-- Tabs - notice slot="title" -->
-        <q-tab slot="title" name="client-info" icon="event_note" default/>
-        <q-tab slot="title" name="client-contact" icon="group" />
+        <q-tab slot="title" name="supplier-info" icon="event_note" default/>
+        <q-tab slot="title" name="supplier-contact" icon="group" />
         <!-- Targets -->
-        <q-tab-pane name="client-info">
+        <q-tab-pane name="supplier-info">
           <q-field :key="field.field" v-for="field in getFields" v-if="!field.detailHidden" :label-width="3" :icon="field.icon" :label="field.label" :count="255" :helper="field.desc" error-label="Some error">
             <q-input v-model="getSelectedRec[field.field]" dark color="yellow" />
           </q-field>
         </q-tab-pane>
-        <q-tab-pane name="client-contact">
+        <q-tab-pane name="supplier-contact">
           <q-list link no-border>
             <q-item :key="contact.id" v-for="contact in getSelectedRec.contacts">
               <q-item-main>
@@ -47,11 +47,11 @@ import {mapGetters, mapMutations, mapActions} from 'vuex'
 
 export default {
   computed: {
-    ...mapGetters('mClient', ['getSelectedRec', 'getIsAdd', 'getFields', 'getIsProcessing']),
+    ...mapGetters('mSupplier', ['getSelectedRec', 'getIsAdd', 'getFields', 'getIsProcessing']),
   },
   methods: {
-    ...mapMutations('mClient', ['discardChange']),
-    ...mapActions('mClient', ['updateSelectedRec']),
+    ...mapMutations('mSupplier', ['discardChange']),
+    ...mapActions('mSupplier', ['updateSelectedRec']),
     save(_, done) {
       this.updateSelectedRec(done)
     },

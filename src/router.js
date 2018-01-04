@@ -39,7 +39,7 @@ export default new VueRouter({
         },
         {
           path: 'supplier',
-          component: load('supplier/SupplierList'),
+          component: load('supplier/List'),
         },
         {
           path: 'product',

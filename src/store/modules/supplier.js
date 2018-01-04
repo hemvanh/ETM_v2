@@ -45,15 +45,6 @@ const state = {
       icon: 'location_on',
       desc: 'Địa chỉ xuất hóa đơn',
     },
-    {
-      label: 'Delivery',
-      field: 'delivery_addr',
-      filter: true,
-      colHidden: true,
-      type: 'string',
-      icon: 'motorcycle',
-      desc: 'Địa chỉ nhận hàng',
-    },
     {label: 'Tel', field: 'tel', width: '120px', filter: true, type: 'string', icon: 'call', desc: ''},
     {label: 'Fax', field: 'fax', width: '120px', filter: true, type: 'string', icon: 'attachment', desc: ''},
   ],
@@ -135,13 +126,12 @@ const actions = {
   },
   fetchRecs({commit}, done) {
     _get(`{
-      getAllClients {
+      getAllSuppliers {
         id
         code
         name
         tax_code
         invoice_addr
-        delivery_addr
         tel
         fax
         contacts {
@@ -151,12 +141,12 @@ const actions = {
           email
           position
           note
-          clientId
+          supplierId
         }
       }
     }`)
       .then(({data}) => {
-        commit('setRecs', data.getAllClients)
+        commit('setRecs', data.getAllSuppliers)
         done()
       })
       .catch(err => {
@@ -168,14 +158,13 @@ const actions = {
     commit('setIsProcessing', true)
     _post(
       getters.getSelectedRec,
-      `mutation ($input: ClientInput) {
-        saveClient(input: $input) {
+      `mutation ($input: SupplierInput) {
+        saveSupplier(input: $input) {
           id
           code
           name
           tax_code
           invoice_addr
-          delivery_addr
           tel
           fax
         }
@@ -183,7 +172,7 @@ const actions = {
     )
       .then(({data}) => {
         commit('setIsProcessing', false)
-        commit('applyChange', data.saveClient)
+        commit('applyChange', data.saveSupplier)
       })
       .catch(err => {
         commit('setIsProcessing', false)
@@ -193,18 +182,18 @@ const actions = {
   },
   deleteRec({commit, getters}, selection) {
     commit('setIsDeleting', true)
-    let ids = Array.from(selection.rows, client => client.data.id)
+    let ids = Array.from(selection.rows, supplier => supplier.data.id)
     _post(
       ids,
       `
       mutation ($input: [Int]) {
-        deleteClient(input: $input)
+        deleteSupplier(input: $input)
       }`
     ).then(({data}) => {
       commit('setIsDeleting', false)
-      _alert(data.deleteClient + ' client(s) deleted', 'info')
-      _.remove(getters.getRecs, client => {
-        return ids.includes(client.id)
+      _alert(data.deleteSupplier + ' supplier(s) deleted', 'info')
+      _.remove(getters.getRecs, supplier => {
+        return ids.includes(supplier.id)
       })
       // this is to re-activate the grid with new data
       // this.data = Object.assign([], this.data) --> it is ok too
