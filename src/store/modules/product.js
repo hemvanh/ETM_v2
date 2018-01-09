@@ -16,7 +16,6 @@ const state = {
       sort: true,
       type: 'string',
       icon: 'book',
-      desc: 'Tên sản phẩm',
     },
     {
       label: 'Brand Name',
@@ -24,8 +23,7 @@ const state = {
       filter: true,
       sort: true,
       type: 'string',
-      icon: 'assignment_ind',
-      desc: 'Tên nhãn hiệu',
+      icon: 'branding_watermark',
     },
     {
       label: 'Model',
@@ -37,26 +35,25 @@ const state = {
     },
     {
       label: 'Specifications',
+      isMultiline: true,
       field: 'specs',
       filter: true,
       type: 'string',
-      icon: 'assignment_ind',
+      icon: 'build',
     },
     {
       label: 'Buying Price',
       field: 'buy',
-      filter: true,
       sort: true,
       type: 'string',
-      icon: 'assignment_ind',
+      icon: 'monetization_on',
     },
     {
       label: 'Selling Price',
       field: 'sell',
-      filter: true,
       sort: true,
       type: 'string',
-      icon: 'assignment_ind',
+      icon: 'attach_money',
     },
   ],
   isDetailShown: false,
@@ -139,21 +136,25 @@ const actions = {
     _get(`{
       getAllProducts {
         id
-        code
         name
-        tax_code
-        invoice_addr
-        delivery_addr
-        tel
-        fax
-        contacts {
+        brand_name
+        model
+        specs
+        buy
+        sell
+        suppliers {
+          id
+          code
+          name
+          tax_code
+          invoice_addr
+          tel
+          fax
+        }
+        docs {
           id
           name
-          tel
-          email
-          position
-          note
-          productId
+          link
         }
       }
     }`)
@@ -173,13 +174,12 @@ const actions = {
       `mutation ($input: ProductInput) {
         saveProduct(input: $input) {
           id
-          code
           name
-          tax_code
-          invoice_addr
-          delivery_addr
-          tel
-          fax
+          brand_name
+          model
+          specs
+          buy
+          sell
         }
       }`
     )
