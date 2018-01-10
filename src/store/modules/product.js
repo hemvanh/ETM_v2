@@ -150,6 +150,8 @@ const actions = {
           invoice_addr
           tel
           fax
+          value
+          label
         }
         docs {
           id

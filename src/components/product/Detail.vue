@@ -27,6 +27,7 @@
           </q-field>
         </q-tab-pane>
         <q-tab-pane name="product-supplier">
+          <q-select filter multiple chips color="purple" float-label="Select suppliers ..." v-model="suppliers" :options="getSupplierList" />
           <q-list link no-border>
             <q-item :key="supplier.id" v-for="supplier in getSelectedRec.suppliers">
               <q-item-main>
@@ -54,14 +55,29 @@
 
 <script>
 import {mapGetters, mapMutations, mapActions} from 'vuex'
-
+import _ from 'lodash'
 export default {
+  mounted() {
+    this.fetchSuppliers()
+  },
   computed: {
     ...mapGetters('mProduct', ['getSelectedRec', 'getIsAdd', 'getFields', 'getIsProcessing']),
+    ...mapGetters('mContact', ['getSupplierList']),
+    suppliers: {
+      get() {
+        if (_.isEmpty(this.getSelectedRec)) return []
+        return this.getSelectedRec.suppliers.map(a => a.id)
+      },
+      set(ids) {
+        console.log(ids)
+        // this.getSelectedRec.suppliers = ids
+      },
+    },
   },
   methods: {
     ...mapMutations('mProduct', ['discardChange']),
     ...mapActions('mProduct', ['updateSelectedRec']),
+    ...mapActions('mContact', ['fetchSuppliers']),
     save(_, done) {
       this.updateSelectedRec(done)
     },
