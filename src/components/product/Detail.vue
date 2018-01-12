@@ -27,7 +27,7 @@
           </q-field>
         </q-tab-pane>
         <q-tab-pane name="product-supplier">
-          <q-select filter multiple chips color="purple" float-label="Select suppliers ..." v-model="suppliers" :options="getSupplierList" />
+          <q-select filter multiple chips color="purple" float-label="Select suppliers ..." v-model="supplierIDsList" :options="getSupplierList" @change="onSupChange" />
           <q-list link no-border>
             <q-item :key="supplier.id" v-for="supplier in getSelectedRec.suppliers">
               <q-item-main>
@@ -60,18 +60,18 @@ export default {
   mounted() {
     this.fetchSuppliers()
   },
+  data() {
+    return {
+      supplierIDsList: [],
+    }
+  },
   computed: {
     ...mapGetters('mProduct', ['getSelectedRec', 'getIsAdd', 'getFields', 'getIsProcessing']),
     ...mapGetters('mContact', ['getSupplierList']),
-    suppliers: {
-      get() {
-        if (_.isEmpty(this.getSelectedRec)) return []
-        return this.getSelectedRec.suppliers.map(a => a.id)
-      },
-      set(ids) {
-        console.log(ids)
-        // this.getSelectedRec.suppliers = ids
-      },
+  },
+  watch: {
+    getSelectedRec() {
+      this.supplierIDsList = _.isEmpty(this.getSelectedRec) ? [] : this.getSelectedRec.suppliers.map(sup => sup.id)
     },
   },
   methods: {
@@ -80,6 +80,9 @@ export default {
     ...mapActions('mContact', ['fetchSuppliers']),
     save(_, done) {
       this.updateSelectedRec(done)
+    },
+    onSupChange() {
+      // push-remove suppliers here
     },
   },
 }
