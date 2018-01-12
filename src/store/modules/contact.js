@@ -224,6 +224,13 @@ const actions = {
         getAllSuppliers {
           value
           label
+          id
+          code
+          name
+          tax_code
+          invoice_addr
+          tel
+          fax
         }
     }`)
       .then(({data}) => {

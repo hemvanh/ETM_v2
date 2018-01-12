@@ -27,7 +27,10 @@
           </q-field>
         </q-tab-pane>
         <q-tab-pane name="product-supplier">
-          <q-select filter multiple chips color="purple" float-label="Select suppliers ..." v-model="supplierIDsList" :options="getSupplierList" @change="onSupChange" />
+          <q-field icon="local_library" :label-width="2" label="Pick Suppliers...">
+            <q-select dark filter multiple chips color="purple" v-model="arrSupplierIDs" :options="getSupplierList" @change="onSupplierChange" />
+          </q-field>
+
           <q-list link no-border>
             <q-item :key="supplier.id" v-for="supplier in getSelectedRec.suppliers">
               <q-item-main>
@@ -62,7 +65,7 @@ export default {
   },
   data() {
     return {
-      supplierIDsList: [],
+      arrSupplierIDs: [],
     }
   },
   computed: {
@@ -71,7 +74,7 @@ export default {
   },
   watch: {
     getSelectedRec() {
-      this.supplierIDsList = _.isEmpty(this.getSelectedRec) ? [] : this.getSelectedRec.suppliers.map(sup => sup.id)
+      this.arrSupplierIDs = _.isEmpty(this.getSelectedRec) ? [] : this.getSelectedRec.suppliers.map(sup => sup.id)
     },
   },
   methods: {
@@ -81,8 +84,8 @@ export default {
     save(_, done) {
       this.updateSelectedRec(done)
     },
-    onSupChange() {
-      // push-remove suppliers here
+    onSupplierChange(selectedSupIDs) {
+      this.getSelectedRec.suppliers = _.filter(this.getSupplierList, sup => selectedSupIDs.indexOf(sup.id) !== -1)
     },
   },
 }
