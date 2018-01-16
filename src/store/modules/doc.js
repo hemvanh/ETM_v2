@@ -10,7 +10,7 @@ const state = {
       classes: 'cell-edit',
     },
     {
-      label: 'Name',
+      label: 'Document Name',
       field: 'name',
       filter: true,
       sort: true,
@@ -27,8 +27,7 @@ const state = {
   selectedRec: {},
   backupRec: {},
   recs: [],
-  clientList: [],
-  supplierList: [],
+  productList: [],
 }
 
 const getters = {
@@ -50,11 +49,8 @@ const getters = {
   getIsDeleting: state => {
     return state.isDeleting
   },
-  getClientList: state => {
-    return state.clientList
-  },
-  getSupplierList: state => {
-    return state.supplierList
+  getProductList: state => {
+    return state.productList
   },
 }
 
@@ -71,11 +67,8 @@ const mutations = {
   setRecs: (state, payload) => {
     state.recs = payload
   },
-  setClientList(state, payload) {
-    state.clientList = payload
-  },
-  setSupplierList(state, payload) {
-    state.supplierList = payload
+  setProductList(state, payload) {
+    state.productList = payload
   },
   setSelectedRec: (state, payload) => {
     if (_.isEmpty(payload)) {
@@ -117,6 +110,7 @@ const actions = {
         id
         name
         link
+        productId
       }
     }`)
       .then(({data}) => {
@@ -142,7 +136,7 @@ const actions = {
     )
       .then(({data}) => {
         commit('setIsProcessing', false)
-        commit('applyChange', data.saveClient)
+        commit('applyChange', data.saveDoc)
       })
       .catch(err => {
         commit('setIsProcessing', false)
@@ -152,7 +146,7 @@ const actions = {
   },
   deleteRec({commit, getters}, selection) {
     commit('setIsDeleting', true)
-    let ids = Array.from(selection.rows, client => client.data.id)
+    let ids = Array.from(selection.rows, doc => doc.data.id)
     _post(
       ids,
       `mutation ($input: [Int]) {
@@ -160,45 +154,26 @@ const actions = {
     }`
     ).then(({data}) => {
       commit('setIsDeleting', false)
-      _alert(data.deleteDoc + ' client(s) deleted', 'info')
-      _.remove(getters.getRecs, client => {
-        return ids.includes(client.id)
+      _alert(data.deleteDoc + ' doc(s) deleted', 'info')
+      _.remove(getters.getRecs, doc => {
+        return ids.includes(doc.id)
       })
       // this is to re-activate the grid with new data
       // this.data = Object.assign([], this.data) --> it is ok too
       commit('setRecs', _.clone(getters.getRecs))
     })
   },
-  fetchClients({commit}) {
+  fetchProducts({commit}) {
     _get(`{
-        getAllClients {
+        getAllProducts {
           value
           label
+          sublabel
+          stamp
         }
     }`)
       .then(({data}) => {
-        commit('setClientList', data.getAllClients)
-      })
-      .catch(err => {
-        _alert(err, 'negative')
-      })
-  },
-  fetchSuppliers({commit}) {
-    _get(`{
-        getAllSuppliers {
-          value
-          label
-          id
-          code
-          name
-          tax_code
-          invoice_addr
-          tel
-          fax
-        }
-    }`)
-      .then(({data}) => {
-        commit('setSupplierList', data.getAllSuppliers)
+        commit('setProductList', data.getAllProducts)
       })
       .catch(err => {
         _alert(err, 'negative')

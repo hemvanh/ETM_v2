@@ -188,7 +188,7 @@ const actions = {
   },
   deleteRec({commit, getters}, selection) {
     commit('setIsDeleting', true)
-    let ids = Array.from(selection.rows, client => client.data.id)
+    let ids = Array.from(selection.rows, contact => contact.data.id)
     _post(
       ids,
       `mutation ($input: [Int]) {
@@ -196,9 +196,9 @@ const actions = {
     }`
     ).then(({data}) => {
       commit('setIsDeleting', false)
-      _alert(data.deleteContact + ' client(s) deleted', 'info')
-      _.remove(getters.getRecs, client => {
-        return ids.includes(client.id)
+      _alert(data.deleteContact + ' contact(s) deleted', 'info')
+      _.remove(getters.getRecs, contact => {
+        return ids.includes(contact.id)
       })
       // this is to re-activate the grid with new data
       // this.data = Object.assign([], this.data) --> it is ok too

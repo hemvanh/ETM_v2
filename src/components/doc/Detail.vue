@@ -16,11 +16,8 @@
         </q-toolbar-title>
       </q-toolbar>
       <div style="padding: 0 15px">
-        <q-field icon="face" :label-width="3" label="Client">
-          <q-select filter v-model="getSelectedRec.clientId" radio :options="getClientList" dark color="red" />
-        </q-field>
-        <q-field icon="local_library" :label-width="3" label="Supplier">
-          <q-select filter v-model="getSelectedRec.supplierId" radio :options="getSupplierList" dark color="red" />
+        <q-field icon="shopping_basket" :label-width="3" label="Pick a Product">
+          <q-select filter v-model="getSelectedRec.productId" radio :options="getProductList" dark color="red" />
         </q-field>
         <q-field :key="field.id" v-for="field in getFields" v-if="!field.detailHidden" :label-width="3" :icon="field.icon" :label="field.label">
           <q-input v-model="getSelectedRec[field.field]" dark color="yellow" />
@@ -35,13 +32,11 @@ import {mapGetters, mapMutations, mapActions} from 'vuex'
 
 export default {
   mounted() {
-    this.fetchClients()
-    this.fetchSuppliers()
+    this.fetchProducts()
   },
   computed: {
     ...mapGetters('mDoc', [
-      'getClientList',
-      'getSupplierList',
+      'getProductList',
       'getSelectedRec',
       'getIsAdd',
       'getFields',
@@ -50,7 +45,7 @@ export default {
   },
   methods: {
     ...mapMutations('mDoc', ['discardChange']),
-    ...mapActions('mDoc', ['updateSelectedRec', 'fetchClients', 'fetchSuppliers']),
+    ...mapActions('mDoc', ['updateSelectedRec', 'fetchProducts']),
     save(_, done) {
       // Actions only allow a single payload (_, done) is passed by Quasar
       this.updateSelectedRec(done)
