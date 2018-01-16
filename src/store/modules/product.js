@@ -14,47 +14,55 @@ const state = {
       field: 'name',
       filter: true,
       sort: true,
-      width: '150px',
+      type: 'string',
+      icon: 'book',
+    },
+    {
+      label: 'Brand Name',
+      field: 'brand_name',
+      filter: true,
+      sort: true,
+      type: 'string',
+      icon: 'branding_watermark',
+    },
+    {
+      label: 'Model',
+      field: 'model',
+      filter: true,
+      sort: true,
       type: 'string',
       icon: 'assignment_ind',
-      desc: 'Tên liên hệ',
-    },
-    {label: 'Tel', field: 'tel', width: '150px', filter: true, type: 'string', icon: 'call', desc: ''},
-    {
-      label: 'Email',
-      field: 'email',
-      filter: true,
-      type: 'string',
-      icon: 'email',
     },
     {
-      label: 'Position',
-      field: 'position',
-      width: '180px',
+      label: 'Specifications',
+      isMultiline: true,
+      field: 'specs',
       filter: true,
       type: 'string',
-      icon: 'work',
-      desc: 'Chức vụ',
+      icon: 'build',
     },
     {
-      label: 'Note',
-      field: 'note',
-      width: '200px',
-      filter: true,
+      label: 'Buying Price',
+      field: 'buy',
+      sort: true,
       type: 'string',
-      icon: 'note',
-      desc: 'Ghi chú thêm',
+      icon: 'monetization_on',
+    },
+    {
+      label: 'Selling Price',
+      field: 'sell',
+      sort: true,
+      type: 'string',
+      icon: 'attach_money',
     },
   ],
   isDetailShown: false,
   isAdd: false,
-  isProcessing: false,
   isDeleting: false,
+  isProcessing: false,
   selectedRec: {},
   backupRec: {},
   recs: [],
-  clientList: [],
-  supplierList: [],
 }
 
 const getters = {
@@ -70,17 +78,11 @@ const getters = {
   getRecs: state => {
     return state.recs
   },
-  getIsProcessing: state => {
-    return state.isProcessing
-  },
   getIsDeleting: state => {
     return state.isDeleting
   },
-  getClientList: state => {
-    return state.clientList
-  },
-  getSupplierList: state => {
-    return state.supplierList
+  getIsProcessing: state => {
+    return state.isProcessing
   },
 }
 
@@ -88,20 +90,14 @@ const mutations = {
   setIsAdd: (state, payload) => {
     state.isAdd = payload
   },
-  setIsProcessing: (state, payload) => {
-    state.isProcessing = payload
-  },
-  setIsDeleting: (state, payload) => {
-    state.isDeleting = payload
-  },
-  setRecs: (state, payload) => {
+  setRecs(state, payload) {
     state.recs = payload
   },
-  setClientList(state, payload) {
-    state.clientList = payload
+  setIsDeleting(state, payload) {
+    state.isDeleting = payload
   },
-  setSupplierList(state, payload) {
-    state.supplierList = payload
+  setIsProcessing(state, payload) {
+    state.isProcessing = payload
   },
   setSelectedRec: (state, payload) => {
     if (_.isEmpty(payload)) {
@@ -115,10 +111,11 @@ const mutations = {
   discardChange: state => {
     _.extend(state.selectedRec, state.backupRec)
     state.isDetailShown = false
+    state.selectedRec = {} // -> is to re-activate the watcher for getSelectedRec
   },
   applyChange: (state, payload) => {
-    _.extend(state.selectedRec, payload)
     state.isDetailShown = false
+    state.selectedRec = {} // -> is to re-activate the watcher for getSelectedRec
   },
   showDetail: (state, payload) => {
     state.isDetailShown = payload
@@ -136,22 +133,36 @@ const actions = {
     commit('showDetail', true)
     commit('setIsAdd', true)
   },
-  fetchRecs: ({commit, getters}, done) => {
-    // done is passed from @refresh="fetchRecs" of Contact q-data-table
+  fetchRecs({commit}, done) {
     _get(`{
-      getAllContacts {
+      getAllProducts {
         id
         name
-        tel
-        email
-        position
-        note
-        clientId
-        supplierId
+        brand_name
+        model
+        specs
+        buy
+        sell
+        suppliers {
+          id
+          code
+          name
+          tax_code
+          invoice_addr
+          tel
+          fax
+          value
+          label
+        }
+        docs {
+          id
+          name
+          link
+        }
       }
     }`)
       .then(({data}) => {
-        commit('setRecs', data.getAllContacts)
+        commit('setRecs', data.getAllProducts)
         done()
       })
       .catch(err => {
@@ -159,26 +170,25 @@ const actions = {
         done()
       })
   },
-  updateSelectedRec: ({commit, getters}, done) => {
+  updateSelectedRec({commit, getters}, done) {
     commit('setIsProcessing', true)
     _post(
       getters.getSelectedRec,
-      `mutation ($input: ContactInput) {
-        saveContact(input: $input) {
+      `mutation ($input: ProductInput) {
+        saveProduct(input: $input) {
           id
           name
-          tel
-          email
-          position
-          note
-          clientId
-          supplierId
+          brand_name
+          model
+          specs
+          buy
+          sell
         }
       }`
     )
       .then(({data}) => {
         commit('setIsProcessing', false)
-        commit('applyChange', data.saveClient)
+        commit('applyChange', data.saveProduct)
       })
       .catch(err => {
         commit('setIsProcessing', false)
@@ -188,57 +198,23 @@ const actions = {
   },
   deleteRec({commit, getters}, selection) {
     commit('setIsDeleting', true)
-    let ids = Array.from(selection.rows, client => client.data.id)
+    let ids = Array.from(selection.rows, product => product.data.id)
     _post(
       ids,
-      `mutation ($input: [Int]) {
-      deleteContact(input: $input)
-    }`
+      `
+      mutation ($input: [Int]) {
+        deleteProduct(input: $input)
+      }`
     ).then(({data}) => {
       commit('setIsDeleting', false)
-      _alert(data.deleteContact + ' client(s) deleted', 'info')
-      _.remove(getters.getRecs, client => {
-        return ids.includes(client.id)
+      _alert(data.deleteProduct + ' product(s) deleted', 'info')
+      _.remove(getters.getRecs, product => {
+        return ids.includes(product.id)
       })
       // this is to re-activate the grid with new data
       // this.data = Object.assign([], this.data) --> it is ok too
       commit('setRecs', _.clone(getters.getRecs))
     })
-  },
-  fetchClients({commit}) {
-    _get(`{
-        getAllClients {
-          value
-          label
-        }
-    }`)
-      .then(({data}) => {
-        commit('setClientList', data.getAllClients)
-      })
-      .catch(err => {
-        _alert(err, 'negative')
-      })
-  },
-  fetchSuppliers({commit}) {
-    _get(`{
-        getAllSuppliers {
-          value
-          label
-          id
-          code
-          name
-          tax_code
-          invoice_addr
-          tel
-          fax
-        }
-    }`)
-      .then(({data}) => {
-        commit('setSupplierList', data.getAllSuppliers)
-      })
-      .catch(err => {
-        _alert(err, 'negative')
-      })
   },
 }
 
