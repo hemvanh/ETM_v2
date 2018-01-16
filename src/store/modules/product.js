@@ -111,10 +111,11 @@ const mutations = {
   discardChange: state => {
     _.extend(state.selectedRec, state.backupRec)
     state.isDetailShown = false
+    state.selectedRec = {} // -> is to re-activate the watcher for getSelectedRec
   },
   applyChange: (state, payload) => {
-    _.extend(state.selectedRec, payload)
     state.isDetailShown = false
+    state.selectedRec = {} // -> is to re-activate the watcher for getSelectedRec
   },
   showDetail: (state, payload) => {
     state.isDetailShown = payload

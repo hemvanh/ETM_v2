@@ -30,7 +30,6 @@
           <q-field icon="local_library" :label-width="2" label="Pick Suppliers...">
             <q-select dark filter multiple chips color="purple" v-model="arrSupplierIDs" :options="getSupplierList" @change="onSupplierChange" />
           </q-field>
-
           <q-list link no-border>
             <q-item :key="supplier.id" v-for="supplier in getSelectedRec.suppliers">
               <q-item-main>
@@ -42,8 +41,8 @@
           </q-list>
         </q-tab-pane>
         <q-tab-pane name="product-docs">
-          <q-list link no-border>
-            <q-item :key="doc.id" v-for="doc in getSelectedRec.docs">
+          <q-list link  no-border>
+            <q-item @click="openLink(doc.link)" :key="doc.id" v-for="doc in getSelectedRec.docs">
               <q-item-main>
                 <q-item-tile color="yellow" label>{{doc.name}}</q-item-tile>
                 <q-item-tile color="green" sublabel>{{doc.link}}</q-item-tile>
@@ -59,6 +58,7 @@
 <script>
 import {mapGetters, mapMutations, mapActions} from 'vuex'
 import _ from 'lodash'
+import {openURL} from 'quasar'
 export default {
   mounted() {
     this.fetchSuppliers()
@@ -74,26 +74,29 @@ export default {
   },
   watch: {
     getSelectedRec() {
-      this.arrSupplierIDs = _.isEmpty(this.getSelectedRec) ? [] : this.getSelectedRec.suppliers.map(sup => sup.id)
+      if (_.isEmpty(this.getSelectedRec) || _.isEmpty(this.getSelectedRec.suppliers)) this.arrSupplierIDs = []
+      else this.arrSupplierIDs = this.getSelectedRec.suppliers.map(sup => sup.id)
     },
   },
   methods: {
     ...mapMutations('mProduct', ['discardChange']),
     ...mapActions('mProduct', ['updateSelectedRec']),
     ...mapActions('mContact', ['fetchSuppliers']),
-    save(_, done) {
+    save(__, done) {
       this.updateSelectedRec(done)
     },
     onSupplierChange(selectedSupIDs) {
       this.getSelectedRec.suppliers = _.filter(this.getSupplierList, sup => selectedSupIDs.indexOf(sup.id) !== -1)
+    },
+    openLink(link) {
+      openURL(link)
     },
   },
 }
 </script>
 
 <<style>
-.q-toolbar .q-btn{
-  padding: 0 13px
+.q-toolbar .q-btn {
+  padding: 0 13px;
 }
 </style>
-
