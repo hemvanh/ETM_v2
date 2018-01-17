@@ -54,6 +54,7 @@ const state = {
   backupRec: {},
   recs: [],
   clientList: [],
+  supplierList: [],
 }
 
 const getters = {
@@ -78,6 +79,9 @@ const getters = {
   getClientList: state => {
     return state.clientList
   },
+  getSupplierList: state => {
+    return state.supplierList
+  },
 }
 
 const mutations = {
@@ -95,6 +99,9 @@ const mutations = {
   },
   setClientList(state, payload) {
     state.clientList = payload
+  },
+  setSupplierList(state, payload) {
+    state.supplierList = payload
   },
   setSelectedRec: (state, payload) => {
     if (_.isEmpty(payload)) {
@@ -140,6 +147,7 @@ const actions = {
         position
         note
         clientId
+        supplierId
       }
     }`)
       .then(({data}) => {
@@ -164,6 +172,7 @@ const actions = {
           position
           note
           clientId
+          supplierId
         }
       }`
     )
@@ -179,7 +188,7 @@ const actions = {
   },
   deleteRec({commit, getters}, selection) {
     commit('setIsDeleting', true)
-    let ids = Array.from(selection.rows, client => client.data.id)
+    let ids = Array.from(selection.rows, contact => contact.data.id)
     _post(
       ids,
       `mutation ($input: [Int]) {
@@ -187,9 +196,9 @@ const actions = {
     }`
     ).then(({data}) => {
       commit('setIsDeleting', false)
-      _alert(data.deleteContact + ' client(s) deleted', 'info')
-      _.remove(getters.getRecs, client => {
-        return ids.includes(client.id)
+      _alert(data.deleteContact + ' contact(s) deleted', 'info')
+      _.remove(getters.getRecs, contact => {
+        return ids.includes(contact.id)
       })
       // this is to re-activate the grid with new data
       // this.data = Object.assign([], this.data) --> it is ok too
@@ -205,6 +214,27 @@ const actions = {
     }`)
       .then(({data}) => {
         commit('setClientList', data.getAllClients)
+      })
+      .catch(err => {
+        _alert(err, 'negative')
+      })
+  },
+  fetchSuppliers({commit}) {
+    _get(`{
+        getAllSuppliers {
+          value
+          label
+          id
+          code
+          name
+          tax_code
+          invoice_addr
+          tel
+          fax
+        }
+    }`)
+      .then(({data}) => {
+        commit('setSupplierList', data.getAllSuppliers)
       })
       .catch(err => {
         _alert(err, 'negative')

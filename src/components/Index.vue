@@ -13,20 +13,24 @@
     </div>
     <div slot="left">
       <q-side-link item to="/client" exact>
-        <q-item-side icon="content_paste" />
+        <q-item-side icon="face" />
         <q-item-main label="Client" />
       </q-side-link>
-      <q-side-link item to="/contact" exact>
-        <q-item-side icon="content_paste" />
-        <q-item-main label="Contact" />
-      </q-side-link>
       <q-side-link item to="/supplier">
-        <q-item-side icon="assignment" />
+        <q-item-side icon="local_library" />
         <q-item-main label="Supplier" />
       </q-side-link>
       <q-side-link item to="/product">
-        <q-item-side icon="assignment" />
+        <q-item-side icon="shopping_basket" />
         <q-item-main label="Product" />
+      </q-side-link>
+      <q-side-link item to="/contact" exact>
+        <q-item-side icon="contact_phone" />
+        <q-item-main label="Contact" />
+      </q-side-link>
+      <q-side-link item to="/doc" exact>
+        <q-item-side icon="link" />
+        <q-item-main label="Documents" />
       </q-side-link>
       <!--
       Notice "indent" Boolean property on QCollapsible
@@ -66,4 +70,3 @@ export default {
   padding-right: 0px !important;
 }
 </style>
-

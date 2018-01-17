@@ -27,23 +27,19 @@ import {mapGetters, mapActions} from 'vuex'
 import _ from 'lodash'
 
 export default {
-  components: {
-    popDetail,
-  },
+  components: {popDetail},
   mixins: [mxGrid],
-  data() {
-    return {
-      config: {
-        title:
-          '<span class="form-label text-white bg-negative"><i class="q-item-icon material-icons">local_library</i><span>Suppliers Information</span></span>',
-      },
-    }
-  },
+  data: () => ({
+    config: {
+      title:
+        '<span class="form-label text-white bg-negative"><i class="q-item-icon material-icons">link</i><span>Documents</span></span>',
+    },
+  }),
   computed: {
-    ...mapGetters('mSupplier', ['getFields', 'getRecs', 'getIsDeleting']),
+    ...mapGetters('mDoc', ['getFields', 'getRecs', 'getIsDeleting']),
   },
   methods: {
-    ...mapActions('mSupplier', ['fetchRecs', 'popAdd', 'popEdit', 'deleteRec']),
+    ...mapActions('mDoc', ['fetchRecs', 'popEdit', 'popAdd', 'deleteRec']),
     edit(id) {
       this.popEdit({rows: [{data: _.find(this.getRecs, {id})}]})
     },

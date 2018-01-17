@@ -19,7 +19,6 @@
     </q-btn>
   </div>
 </template>
-
 <script>
 import mxGrid from '../_mixins/Grid'
 import popDetail from './Detail.vue'
@@ -35,15 +34,15 @@ export default {
     return {
       config: {
         title:
-          '<span class="form-label text-white bg-negative"><i class="q-item-icon material-icons">local_library</i><span>Suppliers Information</span></span>',
+          '<span class="form-label text-white bg-negative"><i class="q-item-icon material-icons">shopping_basket</i><span>Products Information</span></span>',
       },
     }
   },
   computed: {
-    ...mapGetters('mSupplier', ['getFields', 'getRecs', 'getIsDeleting']),
+    ...mapGetters('mProduct', ['getFields', 'getRecs', 'getIsDeleting']),
   },
   methods: {
-    ...mapActions('mSupplier', ['fetchRecs', 'popAdd', 'popEdit', 'deleteRec']),
+    ...mapActions('mProduct', ['fetchRecs', 'popAdd', 'popEdit', 'deleteRec']),
     edit(id) {
       this.popEdit({rows: [{data: _.find(this.getRecs, {id})}]})
     },

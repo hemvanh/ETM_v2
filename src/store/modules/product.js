@@ -10,43 +10,51 @@ const state = {
       classes: 'cell-edit',
     },
     {
-      label: 'Code',
-      field: 'code',
-      width: '75px',
-      filter: true,
-      sort: true,
-      type: 'string',
-      icon: 'book',
-      desc: 'Mã công ty',
-    },
-    {
       label: 'Name',
       field: 'name',
       filter: true,
       sort: true,
       type: 'string',
+      icon: 'book',
+    },
+    {
+      label: 'Brand Name',
+      field: 'brand_name',
+      filter: true,
+      sort: true,
+      type: 'string',
+      icon: 'branding_watermark',
+    },
+    {
+      label: 'Model',
+      field: 'model',
+      filter: true,
+      sort: true,
+      type: 'string',
       icon: 'assignment_ind',
-      desc: 'Tên đăng ký Công ty',
     },
     {
-      label: 'Tax Code',
-      field: 'tax_code',
-      width: '100px',
+      label: 'Specifications',
+      isMultiline: true,
+      field: 'specs',
       filter: true,
       type: 'string',
-      icon: 'receipt',
-      desc: 'Mã số thuế',
+      icon: 'build',
     },
     {
-      label: 'Address',
-      field: 'invoice_addr',
-      filter: true,
+      label: 'Buying Price',
+      field: 'buy',
+      sort: true,
       type: 'string',
-      icon: 'location_on',
-      desc: 'Địa chỉ xuất hóa đơn',
+      icon: 'monetization_on',
     },
-    {label: 'Tel', field: 'tel', width: '120px', filter: true, type: 'string', icon: 'call', desc: ''},
-    {label: 'Fax', field: 'fax', width: '120px', filter: true, type: 'string', icon: 'attachment', desc: ''},
+    {
+      label: 'Selling Price',
+      field: 'sell',
+      sort: true,
+      type: 'string',
+      icon: 'attach_money',
+    },
   ],
   isDetailShown: false,
   isAdd: false,
@@ -103,10 +111,11 @@ const mutations = {
   discardChange: state => {
     _.extend(state.selectedRec, state.backupRec)
     state.isDetailShown = false
+    state.selectedRec = {} // -> is to re-activate the watcher for getSelectedRec
   },
   applyChange: (state, payload) => {
-    _.extend(state.selectedRec, payload)
     state.isDetailShown = false
+    state.selectedRec = {} // -> is to re-activate the watcher for getSelectedRec
   },
   showDetail: (state, payload) => {
     state.isDetailShown = payload
@@ -126,27 +135,34 @@ const actions = {
   },
   fetchRecs({commit}, done) {
     _get(`{
-      getAllSuppliers {
+      getAllProducts {
         id
-        code
         name
-        tax_code
-        invoice_addr
-        tel
-        fax
-        contacts {
+        brand_name
+        model
+        specs
+        buy
+        sell
+        suppliers {
+          id
+          code
+          name
+          tax_code
+          invoice_addr
+          tel
+          fax
+          value
+          label
+        }
+        docs {
           id
           name
-          tel
-          email
-          position
-          note
-          supplierId
+          link
         }
       }
     }`)
       .then(({data}) => {
-        commit('setRecs', data.getAllSuppliers)
+        commit('setRecs', data.getAllProducts)
         done()
       })
       .catch(err => {
@@ -158,21 +174,21 @@ const actions = {
     commit('setIsProcessing', true)
     _post(
       getters.getSelectedRec,
-      `mutation ($input: SupplierInput) {
-        saveSupplier(input: $input) {
+      `mutation ($input: ProductInput) {
+        saveProduct(input: $input) {
           id
-          code
           name
-          tax_code
-          invoice_addr
-          tel
-          fax
+          brand_name
+          model
+          specs
+          buy
+          sell
         }
       }`
     )
       .then(({data}) => {
         commit('setIsProcessing', false)
-        commit('applyChange', data.saveSupplier)
+        commit('applyChange', data.saveProduct)
       })
       .catch(err => {
         commit('setIsProcessing', false)
@@ -182,18 +198,18 @@ const actions = {
   },
   deleteRec({commit, getters}, selection) {
     commit('setIsDeleting', true)
-    let ids = Array.from(selection.rows, supplier => supplier.data.id)
+    let ids = Array.from(selection.rows, product => product.data.id)
     _post(
       ids,
       `
       mutation ($input: [Int]) {
-        deleteSupplier(input: $input)
+        deleteProduct(input: $input)
       }`
     ).then(({data}) => {
       commit('setIsDeleting', false)
-      _alert(data.deleteSupplier + ' supplier(s) deleted', 'info')
-      _.remove(getters.getRecs, supplier => {
-        return ids.includes(supplier.id)
+      _alert(data.deleteProduct + ' product(s) deleted', 'info')
+      _.remove(getters.getRecs, product => {
+        return ids.includes(product.id)
       })
       // this is to re-activate the grid with new data
       // this.data = Object.assign([], this.data) --> it is ok too
