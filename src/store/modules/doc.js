@@ -10,41 +10,15 @@ const state = {
       classes: 'cell-edit',
     },
     {
-      label: 'Name',
+      label: 'Document Name',
       field: 'name',
       filter: true,
       sort: true,
-      width: '150px',
+      width: '200px',
       type: 'string',
       icon: 'assignment_ind',
-      desc: 'Tên liên hệ',
     },
-    {label: 'Tel', field: 'tel', width: '150px', filter: true, type: 'string', icon: 'call', desc: ''},
-    {
-      label: 'Email',
-      field: 'email',
-      filter: true,
-      type: 'string',
-      icon: 'email',
-    },
-    {
-      label: 'Position',
-      field: 'position',
-      width: '180px',
-      filter: true,
-      type: 'string',
-      icon: 'work',
-      desc: 'Chức vụ',
-    },
-    {
-      label: 'Note',
-      field: 'note',
-      width: '200px',
-      filter: true,
-      type: 'string',
-      icon: 'note',
-      desc: 'Ghi chú thêm',
-    },
+    {label: 'Link', field: 'link', type: 'string', icon: 'link', desc: ''},
   ],
   isDetailShown: false,
   isAdd: false,
@@ -53,8 +27,7 @@ const state = {
   selectedRec: {},
   backupRec: {},
   recs: [],
-  clientList: [],
-  supplierList: [],
+  productList: [],
 }
 
 const getters = {
@@ -76,11 +49,8 @@ const getters = {
   getIsDeleting: state => {
     return state.isDeleting
   },
-  getClientList: state => {
-    return state.clientList
-  },
-  getSupplierList: state => {
-    return state.supplierList
+  getProductList: state => {
+    return state.productList
   },
 }
 
@@ -97,11 +67,8 @@ const mutations = {
   setRecs: (state, payload) => {
     state.recs = payload
   },
-  setClientList(state, payload) {
-    state.clientList = payload
-  },
-  setSupplierList(state, payload) {
-    state.supplierList = payload
+  setProductList(state, payload) {
+    state.productList = payload
   },
   setSelectedRec: (state, payload) => {
     if (_.isEmpty(payload)) {
@@ -137,21 +104,17 @@ const actions = {
     commit('setIsAdd', true)
   },
   fetchRecs: ({commit, getters}, done) => {
-    // done is passed from @refresh="fetchRecs" of Contact q-data-table
+    // done is passed from @refresh="fetchRecs" of Doc q-data-table
     _get(`{
-      getAllContacts {
+      getAllDocs {
         id
         name
-        tel
-        email
-        position
-        note
-        clientId
-        supplierId
+        link
+        productId
       }
     }`)
       .then(({data}) => {
-        commit('setRecs', data.getAllContacts)
+        commit('setRecs', data.getAllDocs)
         done()
       })
       .catch(err => {
@@ -163,22 +126,17 @@ const actions = {
     commit('setIsProcessing', true)
     _post(
       getters.getSelectedRec,
-      `mutation ($input: ContactInput) {
-        saveContact(input: $input) {
+      `mutation ($input: DocInput) {
+        saveDoc(input: $input) {
           id
           name
-          tel
-          email
-          position
-          note
-          clientId
-          supplierId
+          link
         }
       }`
     )
       .then(({data}) => {
         commit('setIsProcessing', false)
-        commit('applyChange', data.saveClient)
+        commit('applyChange', data.saveDoc)
       })
       .catch(err => {
         commit('setIsProcessing', false)
@@ -188,53 +146,34 @@ const actions = {
   },
   deleteRec({commit, getters}, selection) {
     commit('setIsDeleting', true)
-    let ids = Array.from(selection.rows, contact => contact.data.id)
+    let ids = Array.from(selection.rows, doc => doc.data.id)
     _post(
       ids,
       `mutation ($input: [Int]) {
-      deleteContact(input: $input)
+      deleteDoc(input: $input)
     }`
     ).then(({data}) => {
       commit('setIsDeleting', false)
-      _alert(data.deleteContact + ' contact(s) deleted', 'info')
-      _.remove(getters.getRecs, contact => {
-        return ids.includes(contact.id)
+      _alert(data.deleteDoc + ' doc(s) deleted', 'info')
+      _.remove(getters.getRecs, doc => {
+        return ids.includes(doc.id)
       })
       // this is to re-activate the grid with new data
       // this.data = Object.assign([], this.data) --> it is ok too
       commit('setRecs', _.clone(getters.getRecs))
     })
   },
-  fetchClients({commit}) {
+  fetchProducts({commit}) {
     _get(`{
-        getAllClients {
+        getAllProducts {
           value
           label
+          sublabel
+          stamp
         }
     }`)
       .then(({data}) => {
-        commit('setClientList', data.getAllClients)
-      })
-      .catch(err => {
-        _alert(err, 'negative')
-      })
-  },
-  fetchSuppliers({commit}) {
-    _get(`{
-        getAllSuppliers {
-          value
-          label
-          id
-          code
-          name
-          tax_code
-          invoice_addr
-          tel
-          fax
-        }
-    }`)
-      .then(({data}) => {
-        commit('setSupplierList', data.getAllSuppliers)
+        commit('setProductList', data.getAllProducts)
       })
       .catch(err => {
         _alert(err, 'negative')

@@ -31,9 +31,11 @@ export default {
   },
   mixins: [mxGrid],
   data() {
+    // <i class="q-item-icon material-icons">face</i>
     return {
       config: {
-        title: '<span class="form-label text-white bg-negative"><b>Clients Information</b></span>',
+        title:
+          '<span class="form-label text-white bg-negative"><i class="q-item-icon material-icons">face</i><span>Clients Information</span></span>',
       },
     }
   },
@@ -92,17 +94,26 @@ export default {
 .cell-edit {
   padding: 4px 0px !important;
 }
+
+/* making label text to be vertivally align with the icon  */
 .form-label {
   width: 100%;
-  padding: 5px;
+  padding: 3px;
   text-align: center;
   border-radius: 10px;
   display: inline-block;
 }
+.form-label span {
+  display: inline-block;
+  height: 24px;
+  vertical-align: middle;
+  padding-top: 3px;
+  margin-left: 5px;
+}
+
 @media (max-width: 600px) {
   .q-btn-round.q-btn-small {
     margin-left: 8px !important;
   }
 }
 </style>
-

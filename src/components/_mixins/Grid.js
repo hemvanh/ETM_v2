@@ -27,8 +27,8 @@ export default {
           allCols: 'All Fields',
           rows: 'Rows',
           selected: {
-            singular: 'Client selected.',
-            plural: 'Clients selected.',
+            singular: 'Item selected.',
+            plural: 'Items selected.',
           },
           clear: 'clear',
           search: 'Search',

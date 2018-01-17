@@ -45,6 +45,10 @@ export default new VueRouter({
           path: 'product',
           component: load('product/List'),
         },
+        {
+          path: 'doc',
+          component: load('doc/List'),
+        },
       ],
     },
     // {path: '/hello', component: load('Hello')},
