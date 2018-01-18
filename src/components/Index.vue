@@ -38,12 +38,18 @@
       Also, notice the "label" property which defines the
       name of the menu item which opens up the sub-menu.
     -->
-      <q-collapsible indent icon="event" label="Event" opened>
-        <q-side-link item to="/app/event">
-          <q-item-main label="Competitions" />
+      <q-collapsible indent icon="event" label="Sales" opened>
+        <q-side-link item to="/sales/inquiry">
+          <q-item-side icon="help_outline" />
+          <q-item-main label="Inquiry" />
         </q-side-link>
-        <q-side-link item to="/app/other-info">
-          <q-item-main label="Other Information" />
+        <q-side-link item to="/sales/quotation">
+          <q-item-side icon="format_quote" />
+          <q-item-main label="Quotation" />
+        </q-side-link>
+        <q-side-link item to="/sales/po">
+          <q-item-side icon="flag" />
+          <q-item-main label="Purchase Order" />
         </q-side-link>
       </q-collapsible>
 

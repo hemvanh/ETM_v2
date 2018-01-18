@@ -51,6 +51,24 @@ export default new VueRouter({
         },
       ],
     },
+    {
+      path: '/sales',
+      component: load('Index'),
+      children: [
+        {
+          path: 'inquiry',
+          component: load('sales/inquiry/List'),
+        },
+        {
+          path: 'quotation',
+          component: load('sales/quotation/List'),
+        },
+        {
+          path: 'po',
+          component: load('sales/po/List'),
+        },
+      ],
+    },
     // {path: '/hello', component: load('Hello')},
     // {path: '/testing', component: load('testing')},
 
